@@ -1,0 +1,24 @@
+# About LabyTerm
+Labyrinth/LabyTerm is a game I've wanted to make since I was a pre-teen; I was obsessed with a game by the same name on the CDC PLATO computer system back in ~1980. The original Labyrinth was a 1st person turn-based dungeon crawler with random maps, enemies, & loot - much like another, far more famous, dungeon game from the same year - Rogue.
+
+# Labyrinth on the Playdate
+After a career working in the Video Game industry, I retired in 2018 and turned my attention elsewhere, focusing on family & hobbies. In 2023, I was fascinated by the then-new Playdate handheld console, which has an open & free SDK. In no time, I found myself making my own "Labyrinth" for the Playdate, heavily influenced by the nearly 45-year-old original Labyrinth. I hand coded Labyrinth in Lua myself (more on AI usage below) which was about 13,000 lines of code and took 7 months of work. I released Labyrinth for the Playdate in April 2024 (https://play.date/games/labyrinth/).
+
+# LabyTerm
+Making a game for Playdate can be tricky; the very limited hardware and tiny screen force serious constraints upon the developer/designer. Once I installed Omarchy, I knew I had to bring Labyrinth to its full glory here. Seeing Omarchy users' awesome desktops, brimming with colorful ASCII, I knew this was the place for Labyrinth's next visit - and the dungeon would render as ASCII to fit the "hacker" aesthetic Omarchy users seem to love (myself included).
+
+# AI
+I don't care to get entrenched in a debate about AI, but I know some people care about these things so here's how AI has helped Labyrinth/LabyTerm.
+
+Labyrinth (Playdate) was entirely hand-coded by me with 2 caveats: First, I did have AI rewrite a section of code that I wrote as a test and knew needed to be rewritten/cleaned. It was going to be tedious work so I chucked it over to AI and it 100% rewrote that code exactly as I'd planned. In like 10 seconds. Yeah, I'll take that. The art assets were about half drawn by me and half drawn by RetroDiffusion - in EVERY case, however, I had to touch-up and add edge-contrast to each piece of art. This was a 7 month project for me, filled with careful attention to detail and design. AI probably accounted for 5% of that effort.
+
+LabyTerm (this game) was an entirely different deal. I pointed Claude Code to my Labyrinth source and asked if, together, we could port it to Omarchy/Linux using C++ (my former language of choice). Claude said this was ideal - I was the original developer and I'd be there to guide, test, & design. The improvement in AI coding since 2023 is astonishing. Working long days with Claude, we enhanced and ported this game, in C++, in about *10 days*! We added features I couldn't have dreamt of on Playdate, or even just coding this on my own. I wouldn't quite call this "Vibe-coding" as it's my original hand-made source we are deriving from, but I think it's fair to call this "Vibe-Porting".
+
+# Credits
+Original CDC PLATO Labyrinth - Randy Harmelink & Michael Wei (1980! K-RAD!)
+Playdate Labyrinth - Sam Charchian (with help from Paul Charchian)
+LabyTerm - Sam Charchian (with ~$20 worth of Claude)
+
+Thank you for playing!
+-- Sam Charchian
+(Please send game feedback to: Labyrinth_Feedback@outlook.com)

@@ -1,0 +1,429 @@
+{
+ "_comment": "Which files in data/audio/ make which sound (see src/audio/Cues.hpp). Keys are Sfx names, plus .SUFFIX for the cue's argument (monster class, weapon type, hit size). A key without a file list is silent. Music volumes are the original's.",
+ "sfx": {
+  "AttackHit.BLUNT": {
+   "files": [
+    "Blunt_Hit_1",
+    "Blunt_Hit_2",
+    "Blunt_Hit_3",
+    "Blunt_Hit_4"
+   ],
+   "volume": 1.0
+  },
+  "AttackHit.MAGICAL": {
+   "files": [
+    "Magical_Hit_1",
+    "Magical_Hit_2",
+    "Magical_Hit_3",
+    "Magical_Hit_4",
+    "Magical_Hit_5"
+   ],
+   "volume": 1.0
+  },
+  "AttackHit.SHARP": {
+   "files": [
+    "Sharp_Hit_1",
+    "Sharp_Hit_2",
+    "Sharp_Hit_3",
+    "Sharp_Hit_4"
+   ],
+   "volume": 1.0
+  },
+  "AttackMiss": {
+   "files": [
+    "Attack_Miss_1",
+    "Attack_Miss_2",
+    "Attack_Miss_3"
+   ],
+   "volume": 1.0
+  },
+  "CharmFailed": {
+   "files": [
+    "Charm_CharmBroken"
+   ],
+   "volume": 1.0
+  },
+  "CharmFailed.FAE": {
+   "files": [
+    "Monster_Fae_Charm_Failed"
+   ],
+   "volume": 1.0
+  },
+  "CharmSuccess": {
+   "files": [
+    "Monster_Fae_Charm_Success"
+   ],
+   "volume": 1.0
+  },
+  "ChestOpen": {
+   "files": [
+    "ChestOpen"
+   ],
+   "volume": 1.0
+  },
+  "CrankClick": {
+   "files": [
+    "CrankClick_1",
+    "CrankClick_2",
+    "CrankClick_3",
+    "CrankClick_4"
+   ],
+   "volume": 1.0
+  },
+  "DoorOpen": {
+   "files": [
+    "Door_Opening-1",
+    "Door_Opening-2",
+    "Door_Opening-3",
+    "Door_Opening-4",
+    "Door_Opening-5"
+   ],
+   "volume": 1.0
+  },
+  "ESP": {
+   "files": [
+    "Scroll_ESP"
+   ],
+   "volume": 1.0
+  },
+  "FeebleMind": {
+   "files": [
+    "Scroll_FeebleMind"
+   ],
+   "volume": 1.0
+  },
+  "FleeFail": {
+   "files": [
+    "Flee_Failure"
+   ],
+   "volume": 1.0
+  },
+  "FleeSuccess": {
+   "files": [
+    "Flee_Success"
+   ],
+   "volume": 1.0
+  },
+  "Footstep": {
+   "files": [
+    "Footsteps_Rock_Walk_1",
+    "Footsteps_Rock_Walk_2",
+    "Footsteps_Rock_Walk_3",
+    "Footsteps_Rock_Walk_4",
+    "Footsteps_Rock_Walk_5",
+    "Footsteps_Rock_Walk_6",
+    "Footsteps_Rock_Walk_7",
+    "Footsteps_Rock_Walk_8",
+    "Footsteps_Rock_Walk_9"
+   ],
+   "volume": 1.0
+  },
+  "Footturn": {
+   "files": [
+    "Footsteps_Turning_1",
+    "Footsteps_Turning_2",
+    "Footsteps_Turning_3",
+    "Footsteps_Turning_4",
+    "Footsteps_Turning_5"
+   ],
+   "volume": 1.0
+  },
+  "FountainAlarm": {
+   "files": [
+    "Fountain_Alarm"
+   ],
+   "volume": 1.0
+  },
+  "FountainDrink": {
+   "files": [
+    "Fountain_Gulp"
+   ],
+   "volume": 1.0
+  },
+  "GoldPickup": {
+   "files": [
+    "Coins_1",
+    "Coins_2",
+    "Coins_3"
+   ],
+   "volume": 1.0
+  },
+  "HolyWater": {
+   "files": [
+    "Scroll_HolyWater"
+   ],
+   "volume": 1.0
+  },
+  "Invisibility": {
+   "files": [
+    "Scroll_Invisibility"
+   ],
+   "volume": 1.0
+  },
+  "InvisibilityEnds": {
+   "files": [
+    "Scroll_Invisibility_ENDS"
+   ],
+   "volume": 1.0
+  },
+  "LevelTreasure": {
+   "files": [
+    "Level_Treasure_Found"
+   ],
+   "volume": 1.0
+  },
+  "LevelUp": {
+   "files": [
+    "LevelUp_Trumpets"
+   ],
+   "volume": 1.0
+  },
+  "MagicArrow": {
+   "files": [
+    "Scroll_MagicArrow"
+   ],
+   "volume": 1.0
+  },
+  "MagicMissile": {
+   "files": [
+    "Scroll_MagicMissile"
+   ],
+   "volume": 1.0
+  },
+  "MonsterAttack.ANIMAL": {
+   "files": [
+    "Monster_Animal-attack",
+    "Monster_Animal-attack_2"
+   ],
+   "volume": 1.0
+  },
+  "MonsterAttack.DEMON": {
+   "files": [
+    "Monster_Demon-attack_1",
+    "Monster_Demon-attack_2",
+    "Monster_Demon-attack_3",
+    "Monster_Demon-attack_4"
+   ],
+   "volume": 1.0
+  },
+  "MonsterAttack.FAE": {
+   "files": [
+    "Monster_Fae-attack",
+    "Monster_Fae-attack_2",
+    "Monster_Fae-attack_3"
+   ],
+   "volume": 1.0
+  },
+  "MonsterAttack.HUMAN": {
+   "files": [
+    "Monster_Human-attack",
+    "Monster_Human-attack_2"
+   ],
+   "volume": 1.0
+  },
+  "MonsterAttack.UNDEAD": {
+   "files": [
+    "Monster_Undead-attack",
+    "Monster_Undead-attack_2"
+   ],
+   "volume": 1.0
+  },
+  "MonsterDies.ANIMAL": {
+   "files": [
+    "Monster_Animal-dies"
+   ],
+   "volume": 1.0
+  },
+  "MonsterDies.DEMON": {
+   "files": [
+    "Monster_Demon-dies"
+   ],
+   "volume": 1.0
+  },
+  "MonsterDies.FAE": {
+   "files": [
+    "Monster_Fae-dies"
+   ],
+   "volume": 1.0
+  },
+  "MonsterDies.HUMAN": {
+   "files": [
+    "Monster_Human-dies"
+   ],
+   "volume": 1.0
+  },
+  "MonsterDies.UNDEAD": {
+   "files": [
+    "Monster_Undead-dies"
+   ],
+   "volume": 1.0
+  },
+  "PlayerDied": {
+   "files": [
+    "PLAYER-dies"
+   ],
+   "volume": 1.0
+  },
+  "PlayerHealed": {
+   "files": [
+    "TOWN_Temple_Heal"
+   ],
+   "volume": 1.0
+  },
+  "PlayerHit.0": {
+   "files": [
+    "PLAYER-Hit_LIGHT"
+   ],
+   "volume": 1.0
+  },
+  "PlayerHit.1": {
+   "files": [
+    "PLAYER-Hit_MEDIUM"
+   ],
+   "volume": 1.0
+  },
+  "PlayerHit.2": {
+   "files": [
+    "PLAYER-Hit_HARD"
+   ],
+   "volume": 1.0
+  },
+  "Prayer": {
+   "files": [
+    "Pray_SUCCESS"
+   ],
+   "volume": 1.0
+  },
+  "RustyLever": {
+   "files": [
+    "ELEVATOR_Rusty_Lever"
+   ],
+   "volume": 1.0
+  },
+  "ScrollDiscard": {
+   "files": [
+    "Scroll_Discard"
+   ],
+   "volume": 1.0
+  },
+  "ScrollDisintegrated": {
+   "files": [
+    "Scroll_Disintegrated"
+   ],
+   "volume": 1.0
+  },
+  "ScrollFailed": {
+   "files": [
+    "Scroll_Failed"
+   ],
+   "volume": 1.0
+  },
+  "ScrollPickup": {
+   "files": [
+    "Scroll_Pickup"
+   ],
+   "volume": 1.0
+  },
+  "SecretCloses": {
+   "files": [
+    "Secret_Closing_Thud"
+   ],
+   "volume": 1.0
+  },
+  "SecretOpens": {
+   "files": [
+    "Secret_Opening_Thud"
+   ],
+   "volume": 1.0
+  },
+  "SecretSlide": {
+   "files": [
+    "Secret_Opening"
+   ],
+   "volume": 1.0
+  },
+  "Sleep": {
+   "files": [
+    "Scroll_Sleep"
+   ],
+   "volume": 1.0
+  },
+  "Teleport": {
+   "files": [
+    "TownPortal"
+   ],
+   "volume": 1.0
+  },
+  "TorchFlicker": {
+   "files": [
+    "Waving_Torch_1",
+    "Waving_Torch_2",
+    "Waving_Torch_3",
+    "Waving_Torch_4",
+    "Waving_Torch_5"
+   ],
+   "volume": 1.0
+  },
+  "WizardEye": {
+   "files": [
+    "Scroll_WizardEye"
+   ],
+   "volume": 1.0
+  }
+ },
+ "music": {
+  "Splash": {
+   "file": "SplashScreen_RAIN",
+   "volume": 1.0
+  },
+  "CharCreation": {
+   "file": "CharCreation_Storm",
+   "volume": 0.6
+  },
+  "Elevator": {
+   "file": "ELEVATOR_Music",
+   "volume": 0.6
+  },
+  "Town": {
+   "file": "TOWN_RoadSign",
+   "volume": 0.3
+  },
+  "Temple": {
+   "file": "TOWN_Temple",
+   "volume": 0.5
+  },
+  "Blacksmith": {
+   "file": "TOWN_Blacksmith",
+   "volume": 0.7
+  },
+  "BeastMart": {
+   "file": "TOWN_BeastMart",
+   "volume": 0.6
+  },
+  "Combat": {
+   "file": "Combat_Music",
+   "volume": 0.5
+  },
+  "BossCombat": {
+   "file": "Boss_Combat_Music",
+   "volume": 0.5
+  },
+  "Dungeon": {
+   "file": "Eerie_Dungeon",
+   "volume": 0.5,
+   "keepPosition": true
+  },
+  "TownPortal": {
+   "file": "TownPortal_IDLE",
+   "volume": 1.0
+  },
+  "SecretDoor": {
+   "file": "Secret_Opening",
+   "volume": 1.0
+  },
+  "InstantOrb": {
+   "file": "InstantOrbOrbit",
+   "volume": 1.0
+  }
+ }
+}

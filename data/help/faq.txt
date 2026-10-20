@@ -1,0 +1,61 @@
+# Why won't the elevator take me back to some floors?
+Once you have killed a floor's boss and left, you cannot return. There is not much left to do there, and the game does not remember finished floors. The elevator can still take you to any other floor.
+
+# LabyTerm is too hard!
+Some tips for successful dungeoneering:
+- Focus early on Dexterity (attack) and Charisma (charming).
+- Charmees are a big help, and Hide lets them do the fighting.
+- Scrolls like Sleep and Feeble Mind make a tough monster much easier.
+- The town's temple heals you completely, for free. Ride up or use the portal after a boss.
+
+# LabyTerm is too easy!
+You are free to ride to any floor you like. Head down a few floors and see how you fare!
+
+# What are the five monster classes?
+Each class has stat bonuses and penalties that grow with the monster's level:
+HUMAN (STR-, INT+, CHA+)
+UNDEAD (CHA-, STR+, DEX+)
+ANIMAL (INT-, STR+, VIT+)
+DEMON (DEX-, STR+, INT+)
+FAE (VIT-, DEX+, CHA+)
+Undead are immune to Charm and (almost) to Sleep, but take extra damage from attack scrolls.
+
+# Does each floor favor one kind of monster?
+Yes. Floor 1 is mostly Human, 2 mostly Undead, 3 Animal, 4 Demon and 5 Fae, then the pattern repeats (floor 6 is mostly Human again). Monsters of other classes can appear, though far less often.
+
+# How do I read the item comparison?
+The stats of both items are listed. You can never keep both, so pick what your character needs most right now. Items left behind are gone forever. Green numbers are better than what you wear and red numbers are worse.
+
+# How do scrolls and magic work?
+Press S for your scrolls. Each one costs MP and needs a minimum level and INT; the list greys out what you cannot cast right now and says why. Scrolls can be cast over and over until one disintegrates (INT and DEX help, depth hurts). MP comes back in full at the town's temple (or from a mana potion).
+Only Wizard Eye and Invisibility work outside of fights. The rest need a monster to aim at.
+
+# What do the numbers under the map mean?
+HP is your health and MP your magic. Gold is what you carry. XP shows your experience toward the next level. When you level up you choose a perk: one stat +1 of your choice, or let Labyrinth choose 2 random stats +1.
+
+# How are Charm, Trick and Pray worked out?
+Besides your level against the monster's level:
+- Charm: your Charisma against the monster's Intelligence.
+- Trick: your Intelligence against the monster's Intelligence.
+- Pray: your Intelligence and Charisma.
+
+# Are there hidden rooms or false walls?
+Trust your eyes, and your ears!
+
+# Can I save?
+Yes, but only in town: pick "Save and Exit" at the sign post. There is no autosave, and quitting the game anywhere else loses the run. Choose Continue on the start screen to pick up where you left off. A save works once: loading it uses it up, so there is no going back after a bad fight. When you die your run is over: press Enter for a new one. Your settings (volumes, key bindings, theme) are kept between runs.
+
+# What is the ghost?
+When you die, the Labyrinth remembers your deceased player. In your next run, on the floor where you died, you have a chance to encounter a Spectral version of your former self: undead, at full health, with your base stats (no gear). Beat him to win your old (best!) item and gold. Your specter can only appear once per death.
+
+# What are Legends?
+The top 10 scores on this computer, arcade style. Make the list when you die and your name blinks in it. Reach it any time from the start screen.
+
+# How do the colors work? (AKA why the weird colors!?)
+LabyTerm takes its colors from your Omarchy theme and follows it when you switch themes. LabyTerm makes significant effort to find appropriate colors and levels of contrast within the theme, but it can't always guarantee an ideal fit. Turn this off in Options, anytime, to get the built-in green-on-black default look. The CRT filter (scanlines and glow) is also in Options.
+
+# Where are the settings kept?
+Options are saved in ~/.config/labyterm/settings.json. Your save, your ghost and the Legends live in ~/.local/state/labyterm/. Game balance numbers live in the game's data/gameplay.json, and a partial copy at ~/.config/labyterm/tuning.json overrides them while the game runs, for those who like to tinker & tune.
+
+Thank you for playing! Send me feedback at (Labyrinth_Feedback@outlook.com), I'd love to hear from you.
+Sam

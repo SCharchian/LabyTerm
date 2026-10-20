@@ -1,0 +1,556 @@
+{
+  "actions": {
+    "HUMAN":  [{"Id": "attack", "Weight": 8}, {"Id": "dust", "Weight": 2}],
+    "UNDEAD": [{"Id": "attack", "Weight": 7}, {"Id": "drain", "Weight": 3}],
+    "ANIMAL": [{"Id": "attack", "Weight": 7}, {"Id": "bite", "Weight": 3}],
+    "DEMON":  [{"Id": "attack", "Weight": 7}, {"Id": "fire", "Weight": 3}],
+    "FAE":    [{"Id": "attack", "Weight": 7}, {"Id": "lull", "Weight": 3}]
+  },
+  "prefixes": [
+    {
+      "Name": "Hungry",
+      "Tier": 2,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": [],
+      "stats": {"STR": 1.0, "DEX": 0.5, "INT": 0, "VIT": -0.5, "CHA": 0}
+    },
+    {
+      "Name": "Flaming",
+      "Tier": 2,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": [],
+      "stats": {"STR": 2.2, "DEX": 0, "INT": 1, "VIT": 0, "CHA": -1.5}
+    },
+    {
+      "Name": "Tainted",
+      "Tier": 3,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": ["POISON"],
+      "stats": {"STR": 0.6, "DEX": 0.6, "INT": -0.3, "VIT": 0, "CHA": -0.3}
+    },
+    {
+      "Name": "Damned",
+      "Tier": 2,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": [],
+      "stats": {"STR": 0, "DEX": 0, "INT": 0.8, "VIT": 4.2, "CHA": -1.6}
+    },
+    {
+      "Name": "Bloody",
+      "Tier": 1,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": ["POISON"],
+      "stats": {"STR": 0, "DEX": 0, "INT": 0, "VIT": -2, "CHA": 0}
+    },
+    {
+      "Name": "Cursed",
+      "Tier": 1,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": ["BLIND"],
+      "stats": {"STR": -0.2, "DEX": -0.2, "INT": -0.2, "VIT": -0.2, "CHA": -0.2}
+    },
+    {
+      "Name": "Pale",
+      "Tier": 1,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": [],
+      "stats": {"STR": 0, "DEX": 0, "INT": 3, "VIT": -1, "CHA": 3}
+    },
+    {
+      "Name": "Champion",
+      "Tier": 2,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": [],
+      "stats": {"STR": 0.4, "DEX": 0.4, "INT": 0.4, "VIT": 0.8, "CHA": 0.4}
+    },
+    {
+      "Name": "Deep",
+      "Tier": 3,
+      "AC": 0,
+      "MaxHP": 0,
+      "Status": ["SLEEP"],
+      "stats": {"STR": 0.6, "DEX": 0.6, "INT": 1.8, "VIT": 1.8, "CHA": -1.2}
+    }
+  ],
+  "classes": {
+    "HUMAN": [
+      {
+        "DisplayName": "Knight",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Monster_Human",
+        "stats": {"STR": 1, "DEX": 1, "INT": 0, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Rogue",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Ninja",
+        "stats": {"STR": 0, "DEX": 2, "INT": 0, "VIT": 0, "CHA": 0}
+      },
+      {
+        "DisplayName": "Zealot",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Priest",
+        "stats": {"STR": 0, "DEX": 0, "INT": 1, "VIT": 1, "CHA": 1}
+      },
+      {
+        "DisplayName": "Necromancer",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Wizard",
+        "stats": {"STR": -1, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 0}
+      },
+      {
+        "DisplayName": "Assassin",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Ninja",
+        "stats": {"STR": 0, "DEX": 2, "INT": 0, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Barbarian",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Barbarian",
+        "stats": {"STR": 2, "DEX": 0, "INT": -1, "VIT": 2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Warlock",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Warlock",
+        "stats": {"STR": -1, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 1}
+      },
+      {
+        "DisplayName": "Crusader",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Monster_Human",
+        "stats": {"STR": 0, "DEX": 2, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "DisplayName": "Sorcerer",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Wizard",
+        "stats": {"STR": -1, "DEX": 0, "INT": 2, "VIT": -1, "CHA": 2}
+      },
+      {
+        "DisplayName": "Guardian",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Monster_Human",
+        "stats": {"STR": 2, "DEX": -1, "INT": -1, "VIT": 2, "CHA": -1}
+      },
+      {
+        "DisplayName": "Warrior",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Barbarian",
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "DisplayName": "Witch",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Witch",
+        "stats": {"STR": -1, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 1}
+      },
+      {
+        "DisplayName": "Paladin",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Monster_Human",
+        "stats": {"STR": 1, "DEX": 0, "INT": 0, "VIT": 1, "CHA": 1}
+      },
+      {
+        "DisplayName": "Thief",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Ninja",
+        "stats": {"STR": 0, "DEX": 2, "INT": -1, "VIT": 0, "CHA": 0}
+      },
+      {
+        "DisplayName": "Alchemist",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Warlock",
+        "stats": {"STR": -1, "DEX": 0, "INT": 2, "VIT": 1, "CHA": 0}
+      },
+      {
+        "DisplayName": "Monk",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Priest",
+        "stats": {"STR": 1, "DEX": 1, "INT": 0, "VIT": 2, "CHA": -1}
+      },
+      {
+        "DisplayName": "Shaman",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Warlock",
+        "stats": {"STR": 1, "DEX": -1, "INT": 1, "VIT": 2, "CHA": 0}
+      },
+      {
+        "DisplayName": "Enchanter",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Priest",
+        "stats": {"STR": -1, "DEX": 1, "INT": 2, "VIT": -1, "CHA": 1}
+      },
+      {
+        "DisplayName": "Berserker",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Barbarian",
+        "stats": {"STR": 2, "DEX": 0, "INT": -2, "VIT": 2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Druid",
+        "Class": "HUMAN",
+        "Image": "images/Monsters/Human/Witch",
+        "stats": {"STR": 0, "DEX": -1, "INT": 2, "VIT": -1, "CHA": 2}
+      }
+    ],
+    "UNDEAD": [
+      {
+        "DisplayName": "Vampire",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Vampire",
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Ghost",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Ghost",
+        "Hover": 0.15,
+        "stats": {"STR": 0, "DEX": 2, "INT": 1, "VIT": 0, "CHA": -2}
+      },
+      {
+        "DisplayName": "Zombie",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Zombie",
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Skeleton",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Skeleton",
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Lich",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Lich",
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Wraith",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Monster_Undead",
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Banshee",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Ghost",
+        "Hover": 0.15,
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Shade",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Ghost",
+        "Hover": 0.15,
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Mummy",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Mummy",
+        "stats": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Revenant",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Monster_Undead",
+        "stats": {"STR": 1, "DEX": 1, "INT": 2, "VIT": 0, "CHA": -1}
+      },
+      {
+        "DisplayName": "Specter",
+        "Class": "UNDEAD",
+        "Image": "images/Monsters/Undead/Monster_Undead",
+        "stats": {"STR": 1, "DEX": 1, "INT": 2, "VIT": 1, "CHA": -1}
+      }
+    ],
+    "ANIMAL": [
+      {
+        "DisplayName": "Rat",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Rat",
+        "stats": {"STR": -1, "DEX": 2, "INT": -2, "VIT": -1, "CHA": -2}
+      },
+      {
+        "DisplayName": "Werewolf",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Monster_Animal",
+        "stats": {"STR": 2, "DEX": 1, "INT": 0, "VIT": 1, "CHA": -2}
+      },
+      {
+        "DisplayName": "Wolf",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Wolf",
+        "stats": {"STR": 1, "DEX": 2, "INT": -2, "VIT": 0, "CHA": -2}
+      },
+      {
+        "DisplayName": "Panther",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Wolf",
+        "stats": {"STR": 1, "DEX": 2, "INT": -1, "VIT": -1, "CHA": -2}
+      },
+      {
+        "DisplayName": "Spider",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Spider",
+        "stats": {"STR": -2, "DEX": 2, "INT": 0, "VIT": -2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Bat",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Bat",
+        "Hover": 0.45,
+        "stats": {"STR": -2, "DEX": 2, "INT": 0, "VIT": -2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Snake",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Snake",
+        "stats": {"STR": -2, "DEX": 2, "INT": 0, "VIT": -2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Bear",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Bear",
+        "stats": {"STR": 2, "DEX": 0, "INT": -2, "VIT": 2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Drake",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Drake",
+        "stats": {"STR": 2, "DEX": 0, "INT": -2, "VIT": 2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Gryphon",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Gryphon",
+        "stats": {"STR": 2, "DEX": 2, "INT": -2, "VIT": 1, "CHA": -2}
+      },
+      {
+        "DisplayName": "Wyvern",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Dragon",
+        "stats": {"STR": 3, "DEX": -2, "INT": -2, "VIT": 3, "CHA": -2}
+      },
+      {
+        "DisplayName": "Raven",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Bat",
+        "Hover": 0.45,
+        "stats": {"STR": -2, "DEX": 2, "INT": 1, "VIT": -2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Minotaur",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Monster_Animal",
+        "stats": {"STR": 2, "DEX": -1, "INT": -2, "VIT": 2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Yeti",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Yeti",
+        "stats": {"STR": 2, "DEX": -1, "INT": -2, "VIT": 2, "CHA": -1}
+      },
+      {
+        "DisplayName": "Scorpion",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Scorpion",
+        "stats": {"STR": 1, "DEX": 1, "INT": -2, "VIT": 1, "CHA": -2}
+      },
+      {
+        "DisplayName": "Dragon",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Dragon",
+        "stats": {"STR": 2, "DEX": 2, "INT": 3, "VIT": 2, "CHA": -1}
+      },
+      {
+        "DisplayName": "SnowDog",
+        "Class": "ANIMAL",
+        "Image": "images/Monsters/Animal/Wolf",
+        "stats": {"STR": 1, "DEX": 2, "INT": 0, "VIT": 0, "CHA": 2}
+      }
+    ],
+    "DEMON": [
+      {
+        "DisplayName": "Demon",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Monster_Demon",
+        "stats": {"STR": 1, "DEX": 1, "INT": 1, "VIT": 1, "CHA": 1}
+      },
+      {
+        "DisplayName": "Imp",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Imp",
+        "stats": {"STR": -2, "DEX": 2, "INT": 1, "VIT": -2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Succubus",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Vixen",
+        "stats": {"STR": 1, "DEX": 2, "INT": 2, "VIT": -1, "CHA": 2}
+      },
+      {
+        "DisplayName": "Hellhound",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/DevilDog",
+        "stats": {"STR": 1, "DEX": 2, "INT": 0, "VIT": 1, "CHA": -2}
+      },
+      {
+        "DisplayName": "Incubus",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Monster_Demon",
+        "stats": {"STR": 0, "DEX": 2, "INT": 2, "VIT": -1, "CHA": 2}
+      },
+      {
+        "DisplayName": "Lost Soul",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Voidwalker",
+        "stats": {"STR": -2, "DEX": 1, "INT": 1, "VIT": -2, "CHA": 0}
+      },
+      {
+        "DisplayName": "Balrog",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Balrog",
+        "stats": {"STR": -2, "DEX": 2, "INT": 2, "VIT": -2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Voidwalker",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Voidwalker",
+        "stats": {"STR": 2, "DEX": 0, "INT": 3, "VIT": 2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Beholder",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Beholder",
+        "Hover": 0.5,
+        "stats": {"STR": 0, "DEX": 1, "INT": 2, "VIT": 2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Doom Bringer",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/ArmoredHulk",
+        "stats": {"STR": 3, "DEX": -2, "INT": 2, "VIT": 3, "CHA": -2}
+      },
+      {
+        "DisplayName": "Gargoyle",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Gargoyle",
+        "stats": {"STR": 2, "DEX": -2, "INT": 1, "VIT": 2, "CHA": -2}
+      },
+      {
+        "DisplayName": "Hellshade",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/ArmoredHulk",
+        "stats": {"STR": 4, "DEX": -2, "INT": 3, "VIT": 4, "CHA": -2}
+      },
+      {
+        "DisplayName": "Chaos Spawn",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Voidwalker",
+        "stats": {"STR": 3, "DEX": 1, "INT": 1, "VIT": 3, "CHA": -2}
+      },
+      {
+        "DisplayName": "Abyssal Lord",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Monster_Demon",
+        "stats": {"STR": 5, "DEX": -2, "INT": 4, "VIT": 5, "CHA": -2}
+      },
+      {
+        "DisplayName": "Oblex",
+        "Class": "DEMON",
+        "Image": "images/Monsters/Demon/Beholder",
+        "Hover": 0.5,
+        "stats": {"STR": 2, "DEX": -1, "INT": 4, "VIT": -1, "CHA": -2}
+      }
+    ],
+    "FAE": [
+      {
+        "DisplayName": "Sprite",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Fairy",
+        "Hover": 0.4,
+        "stats": {"STR": -2, "DEX": 2, "INT": 2, "VIT": -1, "CHA": 2}
+      },
+      {
+        "DisplayName": "Nymph",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Nymph",
+        "stats": {"STR": -1, "DEX": 2, "INT": 1, "VIT": -2, "CHA": 2}
+      },
+      {
+        "DisplayName": "Pixie",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Nymph",
+        "stats": {"STR": -2, "DEX": 3, "INT": 2, "VIT": -2, "CHA": 3}
+      },
+      {
+        "DisplayName": "Sylph",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Dryad",
+        "stats": {"STR": -1, "DEX": 2, "INT": 3, "VIT": -2, "CHA": 3}
+      },
+      {
+        "DisplayName": "Dryad",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Dryad",
+        "stats": {"STR": -2, "DEX": 2, "INT": 2, "VIT": -2, "CHA": 2}
+      },
+      {
+        "DisplayName": "Trickster",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Trickster",
+        "stats": {"STR": -1, "DEX": 3, "INT": 2, "VIT": -2, "CHA": 2}
+      },
+      {
+        "DisplayName": "Fairy",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Fairy",
+        "Hover": 0.4,
+        "stats": {"STR": -2, "DEX": 2, "INT": 2, "VIT": -1, "CHA": 2}
+      },
+      {
+        "DisplayName": "Changeling",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Changeling",
+        "stats": {"STR": -1, "DEX": 2, "INT": 1, "VIT": -2, "CHA": 2}
+      },
+      {
+        "DisplayName": "Dreamweaver",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Changeling",
+        "stats": {"STR": -2, "DEX": 3, "INT": 2, "VIT": -2, "CHA": 3}
+      },
+      {
+        "DisplayName": "Aurora Fae",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Fairy",
+        "Hover": 0.4,
+        "stats": {"STR": -1, "DEX": 2, "INT": 3, "VIT": -2, "CHA": 3}
+      },
+      {
+        "DisplayName": "Wisp",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Fairy",
+        "Hover": 0.4,
+        "stats": {"STR": -2, "DEX": 2, "INT": 2, "VIT": -2, "CHA": 2}
+      },
+      {
+        "DisplayName": "Goblin",
+        "Class": "FAE",
+        "Image": "images/Monsters/Fae/Goblin",
+        "stats": {"STR": 2, "DEX": 0, "INT": -1, "VIT": 1, "CHA": -2}
+      }
+    ]
+  }
+}

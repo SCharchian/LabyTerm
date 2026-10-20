@@ -1,0 +1,363 @@
+// LabyTerm gameplay tuning: every balance knob lives here. Defaults below reproduce original
+// Labyrinth 1.03 behavior exactly (Lua source location noted per group).
+//
+// To tune WITHOUT editing this file, put only the values you want to change in
+//     ~/.config/labyterm/tuning.json        (or the file named by $LABYTERM_TUNING)
+// using the same shape, e.g.   { "combat": { "baseToHit": 0.55 } }
+// The game reloads it while running; a typo in a key name is reported with a suggestion.
+// `labyterm --tuning` lists every knob with its current value and meaning.
+//
+// Conventions: "percent" fields are whole-number percentages (10 = 10%); "chance"/"factor"/
+// "perX" fields are fractions (0.25 = 25%, 0.02 = +2% per X). A value written with a decimal point
+// (3.0) may be fractional; a plain integer (3) must stay a whole number. Edit one knob at a time.
+//
+// NOTE: data/*.json is hand-tuned; edit it directly.
+{
+  "display": {  // screen look: multipliers on the CRT level in use (K key / LABYTERM_CRT, default 2); 1.0 = the level's own strength
+    "glow": 1.0,           // glow around text, frames and bars (0 = none, 2 = twice as strong)
+    "viewportGlow": 1.0,   // glow inside the picture (strength; 0 = none)
+    "objectGlow": 1.0,     // glow around the 3D objects in the picture (the elevator, chests, fountain, boss lair), whatever their brightness; 1 = as strong as the UI glow (0 = none)
+    "monsterGlow": 1.0,    // glow around the monster in a fight, whatever its brightness; 1 = as strong as the UI glow (0 = none)
+    "viewportGlowThreshold": 0.5,    // how bright something in the picture must be to glow: 0.78 = only the brightest (objects, monsters), lower = walls and shaded parts glow too (0.3 = like the UI)
+    "scanlines": 1.0,      // darkness of the raster-line gaps
+    "beamSpread": 1.0,     // horizontal softness of the beam
+    "vignette": 1.0,       // corner darkening
+    "themeColors": 1,      // 1 = take the UI colors from the Omarchy theme (live); 0 = ignore it and use the built-in green-on-black palette
+    "themeStrength": 1.0,  // how much of the theme shows: 1 = the theme's own colors, 0 = the built-in palette, between = a blend of the two (tone down a theme that clashes)
+    "themeSaturation": 1.0, // colorfulness of the theme's colors: 1 = as the theme has them, 0 = greyscale, above 1 = more vivid (tone down a garish theme with ~0.6)
+    "frameMix": 0.55       // how bright the panel outlines are: 0 = the background color (invisible), 1 = the theme's full accent color
+  },
+  "input": {  // keyboard
+    "keyRepeatMs": 150  // a held key repeats at most this often (0 = as fast as the system sends repeats); a fresh press is never delayed
+  },
+  "view": {  // the first-person picture (src/ui/CorridorRenderer.*): a procedural view traced from the map at the picture's own size
+    "fovDegrees": 95.0,       // horizontal field of view (the original's art implies about 120, which warps a lot)
+    "eyeHeight": 0.5,         // eye height as a fraction of the wall height (0.5 = looking straight down the middle)
+    "drawDistance": 6.0,      // cells you can see; beyond this it is dark
+    "supersample": 2,         // samples per picture pixel in each direction, filtered down (1 = off; 2 smooths slanted lines; 3-4 cost more CPU per frame)
+    "fog": 0.6                // 0 = surfaces keep their brightness at any distance, 1 = they fade out completely at the draw distance
+  },
+  "audio": {  // sound (src/audio/): the original's sound effects and music, mixed by LabyTerm (M mutes in the game)
+    "master": 0.8,            // overall volume (0 = silent, 1 = full)
+    "music": 1.0,             // music volume, a multiplier on each track's own level (the original's levels; 0 = no music)
+    "sfx": 1.0               // sound effects volume (0 = none)
+  },
+  "torch": {  // the torch's light in the dungeon view (src/render/FrameRenderer.cpp torch pass, src/render/TorchFlicker.hpp): the picture darkens towards its edges, and now and then flickers with a crackle (only while the window has focus)
+    "enabled": 1,            // 1 = on, 0 = no darkness at the edges and no flicker
+    "darkness": 0.88,        // how dark the very edge gets: 0 = not at all, 1 = the full dark colour
+    "darkColor": 0.25,       // the dark colour: the theme background times this (0 = black, 1 = the background itself)
+    "radius": 0.60,          // where the dark starts, as a fraction of the way from the picture's centre to its edge (smaller = a tighter pool of light)
+    "softness": 0.66,        // how far the dark takes to reach full strength after that (larger = a gentler fall-off)
+    "boxiness": 2.6,         // the shape of the light: 2 = an ellipse, higher = more of a rounded rectangle that fits the screen
+    "bands": 5,              // steps of darkness: the chunky look (2 = very few, 64 = nearly smooth)
+    "dither": 0.9,           // how much the steps are dithered into each other at the sub-pixel grid (0 = hard rings, 1 = fully dithered)
+    "breathSeconds": 3.0,    // the calm torch breathes: the pool of light swells and shrinks slowly, one cycle in about this long (0 = a steady light, and no wake-ups while idle)
+    "breathAmount": 0.05,    // how far the edge of the light moves in and out, as a fraction of the way to the picture's edge
+    "breathFps": 4,          // how many times a second the breathing is redrawn (each redraw costs CPU: lower = cheaper but steppier)
+    "flickerSeconds": 4.8,   // a flicker starts at random about this often (the original: 0.7% per frame at 30 frames per second); 0 = never
+    "flickerMinFrames": 2,   // a flicker lasts this many to
+    "flickerMaxFrames": 5,   // this many frames (the original's 2 to 5)
+    "flickerFps": 30,        // frames per second during a flicker
+    "flickerShift": 0.07,    // how far the pool of light swings sideways on a flicker frame, as a fraction of half the picture's width (stands in for the original's horizontal flip)
+    "flickerPulse": 0.12     // how much the darkness changes on a flicker frame (brighter / dimmer in turn)
+  },
+  "dungeon": {  // level generator (src/game/Level.cpp, our own design) and Dungeon.lua / main.lua ResetDungeon, InitDungeon
+    "sizeX": 32,                // map width in tiles
+    "sizeY": 32,                // map height in tiles
+    "maxRooms": 10,             // maximum rooms the level generator tries to place (fewer fit when the rooms are big)
+    "startRoomSize": 5,         // largest room side, in tiles, on the very first dungeon (InitDungeon)
+    "startScattering": 3,       // corridor wiggliness on the very first dungeon
+    "roomSizeMin": 5,           // later floors: largest room side = roomSizeMin + (floor % roomSizeCycle), in tiles, never above the open span
+    "roomSizeCycle": 3,         // cycle length for the room-size variation (floor % this)
+    "openSpanExtra": 1,         // the widest open space (a room, any direction) is the draw distance (view.drawDistance, whole cells) plus this; corridors may be longer
+    "extraLoops": 2,            // corridors added beyond the spanning tree that joins all rooms, so the floor has loops instead of only dead ends (0 = a pure tree)
+    "scatteringMin": 2,         // later floors: scattering = scatteringMin + (floor % scatteringCycle)
+    "scatteringCycle": 5,  // cycle length for the scattering variation (floor % this)
+    "maxFloor": 9999,           // deepest floor the elevator can take you to
+    "regenSteps": 20,           // walking: 1 HP and 1 MP come back every this many steps (main.lua; 0 = no regeneration)
+    "secretDoorMs": 3000        // how long a secret door takes to slide open on its own (the original needed the crank); closing takes half as long
+  },
+  "encounters": {  // constants.lua GP_*, Monster.lua RollRandomEncounter
+    "monsterChancePercent": 6,  // chance per step that a monster appears (random(1,100) < this)
+    "pitySteps": 4,             // pity timer: this many steps after a run starts and after every fight are guaranteed free of random encounters (the boss tile still triggers)
+    "alarmChancePercent": 15,   // a fountain's alarm: the chance per step that a monster appears, until the next floor (SecretDoor.lua DoAlarm)
+    "combatInputDelayMs": 350,  // after a fight starts, keys are ignored this long (so the walking keys still being pressed don't move the menu)
+    "corpseChance": 0.25,       // chance an encounter is your own corpse from a previous run (if one exists on this floor)
+    "corpseExpDivisor": 4       // the ghost of a dead hero is worth (their experience + 1) / this, rounded up (Monster.lua SavePlayerCorpse)
+  },
+  "actions": {  // constants.lua
+    "minChance": 0.05,          // floor on the chance of most actions succeeding (hit, flee, wake, charm, ...)
+    "maxChance": 0.95           // ceiling on the chance of an attack hitting
+  },
+  "combat": {  // Monster.lua AttackMonster / MonsterAttack*
+    "baseToHit": 0.45,          // base to-hit chance, player and monsters alike
+    "toHitDexAcModifier": 0.01, // +/- per point of attacker DEX over defender AC
+    "toHitLevelModifier": 0.01, // +/- per level of attacker over defender
+    "toHitDexDeltaModifier": 0.02, // +/- per point of attacker DEX over defender DEX
+    "hitRandomPercent": 10,     // random swing added to to-hit: uniform -N..+N percent
+    "minDamageStrFactor": 0.5,  // player's minimum damage uses STR * this ...
+    "minDamageLevelFactor": 0.5, // ... and half the level difference (max damage uses full STR and full difference)
+    "critBaseChance": 0.03,     // critical hit chance: base ...
+    "critPerDexAdvantage": 0.005, // ... + per point of player DEX over monster DEX ...
+    "critPerStr": 0.0035,       // ... + per point of player STR
+    "critBonusCenterPercent": 50, // crit damage bonus (percent): biased random around this center ...
+    "critBonusRadiusPercent": 25, // ... within this radius ...
+    "critBonusStrength": 50,    // ... with this spread (higher = more variable) ...
+    "critBonusMinPercent": 25,  // ... clamped to [min, max]
+    "critBonusMaxPercent": 75,  // upper clamp for the crit bonus percent
+    "npcDamageDie": 6,          // monster / charmee damage = floor((d6 + STR) / npcDamageStrDivisor)
+    "npcDamageStrDivisor": 2,  // divisor applied to (die + STR) for monster/charmee damage
+    "attackRollDie": 20,        // monster/charmee attack-roll die for hits against charmees / monsters
+    "charmeeDexMultiplier": 0.75, // charmee hits monster if (d20 + DEX) * this >= monster AC
+    "monsterDexMultiplier": 0.5,  // monster hits charmee if (d20 + DEX) * this >= charmee AC
+    "charmeeAttackDexMultiplier": 0.5, // a charmee's follow-up attack after your attack hits if (d20 + DEX) * this >= monster AC
+    "playerDamageMultiplier": 1.0,  // BALANCE LEVER: scales every point of damage you deal to monsters (1.0 = original; at least 1 damage still lands)
+    "maxHitPercent": 35,         // BALANCE LEVER: one monster hit never takes more than this percent of your max HP (0 = no limit): no instant deaths from full health
+    "maxHitPercentBoss": 45,     // the same limit for a boss's hits
+    "bossDamageMultiplier": 0.85,  // BALANCE LEVER: bosses deal this much more (or less) on top of monsterDamageMultiplier
+    "monsterDamageMultiplier": 0.8  // BALANCE LEVER: scales damage monsters deal to you and your charmees (1.0 = original; at least 1 still lands)
+  },
+  "defense": {  // armor/vitality reduction applied to damage (damage - AC*acFactor - VIT*vitFactor, minimum 1)
+    "monsterAcWhenPlayerHits": 0.10,    // player attacks monster (rounds up)
+    "monsterVitWhenPlayerHits": 0.10,  // VIT factor for the same reduction
+    "monsterAcWhenCharmeeHits": 0.125,  // charmee attacks monster
+    "monsterVitWhenCharmeeHits": 0.125,  // VIT factor for the same reduction
+    "playerAcWhenMonsterHits": 0.15,    // monster attacks player
+    "playerVitWhenMonsterHits": 0.20,  // VIT factor for the same reduction
+    "charmeeAcWhenMonsterHits": 0.125,  // monster attacks charmee
+    "charmeeVitWhenMonsterHits": 0.125,  // VIT factor for the same reduction
+    "proportional": 1,          // BALANCE LEVER: 1 = armor and VIT cut a monster's blow in proportion (raw * raw / (raw + defense * strength)) instead of subtracting (the original): no point where armor makes you immune and then a stronger blow suddenly hurts
+    "proportionalStrength": 1.0  // how much a point of defense counts in the proportional formula
+  },
+  "flee": {  // Monster.lua MonsterAttemptFlee / monster turn
+    "baseChance": 0.25,         // chance a fleeing monster actually escapes ...
+    "perDexDelta": 0.02,        // ... + per point of monster DEX over player DEX ...
+    "perLevelDelta": 0.02,      // ... + per level of monster over player
+    "considerBelowHpDivisor": 3, // monster considers fleeing when HP < maxHP / this
+    "considerBaseChance": 0.25, // chance it decides to flee: this + (playerHP - monsterHP) / considerHpGapDivisor
+    "considerHpGapDivisor": 100  // divisor for the HP gap (player HP minus monster HP) in that chance
+  },
+  "wake": {  // sleeping monster waking up (Monster.lua)
+    "baseChance": 0.50,  // base chance each turn a sleeping monster wakes
+    "perIntDelta": 0.05,        // per point of monster INT over player INT
+    "perLevelDelta": 0.02       // per level of monster over player
+  },
+  "charm": {  // Combat::charmChance (reworked for LabyTerm; the original: base 0.13 + 0.02 * (CHA - monster INT) + 0.01 * level delta)
+    "baseChance": 0.50,  // chance a charm attempt works for a hero with exactly the average CHA of their level, against a monster of their level (undead cannot be charmed)
+    "relativeSlope": 1.0,       // +this per 100% of CHA above the average for the hero's level (1.0 = +10 points per 10% above, -10 per 10% below)
+    "perLevelDelta": 0.01,      // per level of player over monster
+    "minChance": 0.05,  // the chance never goes below this ...
+    "maxChance": 0.95   // ... or above this
+  },
+  "mutiny": {  // Monster.lua DoHide: chance a charmee turns on you
+    "baseChance": 0.13,  // base chance per charmee per turn
+    "perIntOverPlayerInt": 0.01, // per point of charmee INT over player INT
+    "perIntOverPlayerCha": 0.01, // per point of charmee INT over player CHA
+    "minChance": 0.01,  // floor on the mutiny chance
+    "maxDamagePercent": 25  // the traitor's blow takes at most this percent of your max HP (0 = no limit)
+  },
+  "trick": {  // Combat::trickChance (same shape as charm, driven by INT)
+    "baseChance": 0.33,  // chance a trick kills the monster outright for a hero with exactly the average INT of their level, against a monster of their level
+    "relativeSlope": 1.0,       // +this per 100% of INT above the average for the hero's level
+    "perLevelDelta": 0.01,      // per level of player over monster
+    "bossFactor": 0.2,  // a boss's chance is the normal chance times this (an instant kill on a boss is a strong move)
+    "minChance": 0.05,  // the chance never goes below this ...
+    "maxChance": 0.95   // ... or above this
+  },
+  "pray": {  // Combat::prayChance (reworked): faith (0.75 INT + 0.25 VIT against the average) + desperation (low HP, monster level above yours)
+    "intShare": 0.75,  // weight of INT in the prayer stat (VIT gets the rest)
+    "relativeSlope": 1.0,       // +this per 100% of the prayer stat above the average for the hero's level
+    "baseChance": 0.05,  // the least a prayer is ever worth (it also is the floor of the whole chance)
+    "hpDesperation": 0.25,      // added when HP is at or under hpDesperationFloor of max, scaling up linearly from 0 at full HP
+    "hpDesperationFloor": 0.10,  // HP fraction at which the HP desperation is complete
+    "perLevelBehind": 0.04,     // added per level the monster is above the hero ...
+    "maxLevelBehind": 4,  // ... for at most this many levels (4 levels = +16 points)
+    "maxChance": 0.50   // hard cap on a prayer's chance
+  },
+  "heroAverage": {  // what an "average" hero's stats are at a given level (measured from the balance bot, REPORT.md "Hero stats by level"); Charm, Trick and Pray compare your stat to this
+    "intBase": 14.3,    // average INT at level 1 ...
+    "intPerLevel": 0.6, // ... and per level above 1
+    "chaBase": 15.0,    // average CHA at level 1 ...
+    "chaPerLevel": 0.55,  // ... and per level above 1
+    "vitBase": 14.7,    // average VIT at level 1 ...
+    "vitPerLevel": 1.3  // ... and per level above 1
+  },
+  "scaling": {  // helpFunctions.lua globalMonsterStatLevelNormalize: per-level growth of stats (monsters, boss levels, loot, player damage)
+    "growthMinPercent": -20,    // each level adds 1 + a random growth in this range (percent of the level count) ...
+    "growthMaxPercent": 150     // ... so the average is about +1.65 per level
+  },
+  "monsters": {  // Monster.lua RandomizeMonster / CreateByLevel, helpFunctions.lua BossLevelizer
+    "classSlot1": 0,  // dominant class of floors 1, 6, 11 ... (0 HUMAN, 1 UNDEAD, 2 ANIMAL, 3 DEMON, 4 FAE); rotation weakest to strongest (original: HUMAN UNDEAD ANIMAL DEMON FAE)
+    "classSlot2": 4,  // ... of floors 2, 7, 12 ...
+    "classSlot3": 1,  // ... of floors 3, 8, 13 ...
+    "classSlot4": 2,  // ... of floors 4, 9, 14 ...
+    "classSlot5": 3,  // ... of floors 5, 10, 15 ... (every 10th floor is a demon floor)
+    "boss10EveryFloors": 10,  // every this many floors the boss is the Boss10 (a tougher boss, bigger and glowing, with a guaranteed prefixed drop)
+    "boss10LevelBonus": 2,  // levels above a regular boss's
+    "boss10LevelBonusPerTen": 1,  // ... plus this for every further 10 floors (floor 20: +1, floor 30: +2)
+    "boss10HpMultiplier": 2.2,  // extra max HP
+    "boss10XpMultiplier": 1.5,  // XP of a regular boss at that level times this
+    "boss10Scale": 1.5,  // the Boss10's picture is this many times bigger
+    "recoverySoftenLevels": 1,  // the floor after a Boss10 floor (11, 21, ...) makes its monsters' stats for this many levels lower (their level, XP and loot stay the floor's)
+    "dominantClassRollBelow": 93, // roll 1-100; below this the floor's dominant class spawns (so oddball classes = 101 - this percent)
+    "statBase": 11,             // base value of every monster stat at level 1
+    "statRadius": 3,            // allowed distance from the center
+    "statStrength": 2.5,        // higher = more variable (1.5 gives ~80-90% exactly-center values)
+    "statDefinitionWeight": 0.5, // center = statBase + definitionStat * this + level * levelWeight
+    "statLevelWeight": 0.5,  // weight of the monster's level in the stat center
+    "statGrowthFactor": 0.82,    // BALANCE LEVER: the per-level stat growth of monsters (helpFunctions.lua globalMonsterStatLevelNormalize, about +1.65 per level) is scaled by this; 1.0 = original
+    "deepGrowthStart": 10,      // BALANCE LEVER: from this monster level on, monsters' per-level stat growth is stronger ...
+    "deepGrowthExtra": 0.2,     // ... by this much per level beyond it (0.5: every level past the start counts 1.5 levels of growth), so strong builds keep meeting a ramp
+    "statMax": 2048,  // hard cap on any monster stat
+    "prefixChanceBase": 5,      // percent chance of a prefix = base + perLevel * level, x bossMultiplier for bosses, capped
+    "prefixChancePerLevel": 1,  // percent added per monster level
+    "bossPrefixMultiplier": 1.5,  // bosses multiply the prefix chance by this
+    "prefixChanceCap": 75,  // prefix chance never exceeds this percent
+    "prefixStatPerLevel": 1,    // prefix stat bonus multiplied by level * this
+    "prefixExpWeak": 1.5,       // XP multiplier for a monster with a weak-tier prefix (Pale, Cursed, Bloody) ...
+    "prefixExpMiddle": 3.0,     // ... middle tier (Hungry, Flaming, Champion, Damned) ...
+    "prefixExpStrong": 5.0,     // ... strong tier (Tainted, Deep); the original gave every prefix x3
+    "expStrength": 3,           // XP = biased random around level (higher = more variable)
+    "hpStrength": 2,            // HP = biased random around VIT (higher = more variable)
+    "hpMax": 999,  // hard cap on monster HP
+    "hpMultiplier": 1.5,        // BALANCE LEVER: monster max HP is scaled by this after it is rolled (1.0 = original)
+    "bossHpBonusMinPercent": 25, // bosses get this much extra HP, random between min and max percent
+    "bossHpBonusMaxPercent": 75,  // upper bound of the boss HP bonus
+    "acDexFactor": 1.0,         // monster AC = DEX * this + level * acLevelFactor
+    "acLevelFactor": 1,         // ... + level * this
+    "bossLevelSlope": 1.1111111111111112, // boss level = floor(slope * floorLevel + offset)   (original: 10/9 and 17/9)
+    "bossLevelOffset": 1.8888888888888888,  // constant term of the boss level formula
+    "classBonusPerLevel": {     // added to a monster's stats per level, by class (negative = penalty)
+      "HUMAN":  { "STR": -0.3, "INT": 1, "CHA": 1 },
+      "UNDEAD": { "CHA": -1, "STR": 0.4, "DEX": 0.4 },
+      "ANIMAL": { "INT": -1, "STR": 0.2, "VIT": 0.2 },
+      "DEMON":  { "DEX": -0.67, "STR": 0.2, "INT": 0.6 },
+      "FAE":    { "VIT": -0.3, "DEX": 0.5, "CHA": 1 }
+    }
+  },
+  "monsterActions": {  // monster combat actions beyond the plain attack (which actions a class uses, and their weights: data/monsters.json "actions") and prefix status effects
+    "bossSpecialMultiplier": 1.5, // bosses pick special actions this many times more often (weight of every non-attack action)
+    "drainDamageFactor": 0.7,   // Undead drain: damage is a plain hit's damage times this; the monster heals the damage it did
+    "biteBleedChance": 0.4,     // Animal bite: chance a hit also makes you bleed (poison), before your resistance
+    "fireToHitBonus": 0.10,     // Demon fire: added to the monster's to-hit chance
+    "fireDamageFactor": 1.25,   // Demon fire: damage is a plain hit's raw damage times this, and your armor does not reduce it (VIT still does)
+    "lullBaseChance": 0.30,     // Fae lullaby: chance it puts you to sleep ...
+    "lullPerIntDelta": 0.02,    // ... + per point of monster INT over your INT ...
+    "lullPerLevelDelta": 0.02,  // ... + per level of monster over you
+    "dustBaseChance": 0.45,     // Human sand in the eyes: chance it blinds you ...
+    "dustPerDexDelta": 0.02,    // ... + per point of monster DEX over your DEX ...
+    "dustPerLevelDelta": 0.02,  // ... + per level of monster over you
+    "prefixStatusChance": 0.30, // a prefixed monster's hit also afflicts you (its prefix's Status) with this chance ...
+    "prefixPerStatDelta": 0.02, // ... + per point of the monster's matching stat over yours (poison: VIT, sleep: INT, blind: DEX) ...
+    "prefixPerLevelDelta": 0.02, // ... + per level of monster over you
+    "poisonTurns": 4,           // poison / bleeding lasts this many turns (a new dose only refreshes it)
+    "poisonDamageBase": 1,      // damage each turn = base + monster level * perLevel (rounded down)
+    "poisonDamagePerLevel": 0.25, // see above
+    "sleepTurns": 2,            // asleep: your actions are skipped for up to this many turns; any hit on you wakes you at once
+    "blindTurns": 3,            // blind: your attacks are weaker for this many turns
+    "blindToHitPenalty": 0.25   // blind: subtracted from your attack's to-hit chance
+  },
+  "progression": {  // Player.lua
+    "xpCoefficient": 8,         // XP needed for the next level = floor(coefficient * (1 + (level-1)^exponent)) + flat
+    "xpExponent": 2,  // exponent on (level - 1)
+    "xpFlat": 2,  // flat XP added after the formula
+    "hpPerVit": 1,              // max HP = VIT * this + equipment HP
+    "mpPerInt": 0.5,            // max MP = INT * this + equipment MP
+    "acPerDex": 0.5,            // player AC = DEX * this + equipment AC
+    "levelUpStatPoints": 2,     // stat points a level-up grants, spent at random (the original's "let Labyrinth choose")
+    "levelUpHealPercent": 0,    // percent of max HP restored on level-up (the original restores none)
+    "killExpMultiplier": 1.25,   // BALANCE LEVER: XP from kills is scaled by this (1.0 = original)
+    "xpBackoff1Percent": 8,     // a kill gives this much less XP when you are 1 level above the monster ...
+    "xpBackoff2Percent": 16,    // ... 2 levels above ...
+    "xpBackoff3Percent": 24,    // ... 3 levels above ...
+    "xpBackoff4Percent": 50,    // ... 4 levels above ...
+    "xpBackoff5Percent": 75     // ... 5 or more levels above (the cap)
+  },
+  "loot": {  // Loot.lua GenerateTreasureByLevel
+    "levelTreasureBoostDivisor": 8, // level treasure is generated at a level boosted by floor(1 + level / this) levels
+    "goldBase": 2,              // gold = biased random around (goldBase + level), radius (goldRadiusBase + level * goldRadiusPerLevel)
+    "goldRadiusBase": 1,  // constant part of the gold radius
+    "goldRadiusPerLevel": 0.5,  // per-level part of the gold radius
+    "goldMaxPerLevel": 2,       // max gold = (level + 1) * this
+    "potionDropChance": 0.2,    // chance a (non-level) chest drops a potion when you are hurt / low on MP
+    "killGoldMultiplier": 1.0,  // BALANCE LEVER: gold in chests is scaled by this (1.0 = original)
+    "potionMinPercent": 25,     // a health / mana potion restores at least this percent of your max HP / MP ...
+    "potionMaxPercent": 75      // ... and at most this percent (random in between)
+  },
+  "items": {  // Equipment.lua GetRandomItem / Loot.lua globalItemLeveler
+    "levelRadius": 3,           // spread of the list position picked for an item of a given level
+    "levelRadiusStrength": 2,  // spread (strength) of that list-position pick; higher = more variable
+    "indexCenterModulus": 11,   // list position centers on (itemLevel % this). The original used the item-type count here, likely by accident; 0 = use itemLevel itself
+    "levelSpread": 2,           // item level = biased random around the requested level, +/- this ...
+    "levelMaxAbove": 2,         // ... at most this far above it
+    "prefixChanceBase": 3,      // percent chance of a prefix = itemLevel + this
+    "statRadiusDivisor": 2,     // each non-zero stat varies by up to ceil(itemLevel / this)
+    "zeroStatGainChance": 0.13, // chance a zero-value stat gains a random -1/0/+1
+    "zeroStatGainStrengthMultiplier": 2,  // spread multiplier for those random gains
+    "levelerUpgradeChance": 0.5,       // per point of level, chance a chosen stat moves one step in its direction
+    "levelerSecondUpgradeChance": 0.5, // chance of a second step when the stat's base magnitude is above 1
+    "upscaleLevelsDivisor": 4,  // HP, MP and AC grow by floor(levels / this) ...
+    "upscaleDoubleChance": 0.5, // ... with this chance of growing a second time when the value is above 1
+    "noStatLevelPenalty": 0.5   // items with no stats at all only get this fraction of the level bonus
+  },
+  "store": {  // Blacksmith.lua / BeastMart.lua CalculatePrice
+    "priceMultiplier": 3,       // gold per point of item bonus (STR+DEX+INT+VIT+CHA+HP+AC+MP)
+    "masterPiece": 1,           // 1: the first stock slot of every restock is a master's piece (prefixed, level up to +10%, drawn in gold); 0: off
+    "itemsInShop": 7,           // blacksmith stock (last slot is always a scroll)
+    "pricePerLevel": 5,         // base gold per item level
+    "scrollPricePerType": 5,    // scrolls: + this * scroll type number (original 1-based numbering)
+    "minPrice": 1,  // no item or beast costs less than this
+    "beastPricePerLevel": 5,    // charmed-monster price = level * this + (stat total + HP) / beastStatDivisor
+    "beastStatDivisor": 2  // divisor on (stat total + current HP) in the price
+  },
+  "scrolls": {  // Scrolls.lua
+    "arrowUndeadMultiplier": 2,         // Magic Arrow damage multiplier vs. undead (damage = random(1 + level, INT))
+    "missileMinIntFactor": 0.5,         // Magic Missile damage = random(INT * min, INT * max)
+    "missileMaxIntFactor": 1.25,  // upper damage bound as a multiple of INT
+    "missileUndeadMinPercent": 125,     // Magic Missile bonus vs. undead: random percent in [min, max]
+    "missileUndeadMaxPercent": 175,  // upper bound of the undead bonus percent
+    "holyWaterBaseChance": 0.70,        // kill chance vs undead
+    "holyWaterPerIntDelta": 0.01,  // per point of player INT over monster INT
+    "holyWaterPerLevelDelta": 0.01,  // per level of player over monster
+    "sleepBaseChance": 0.40,  // base chance the sleep scroll works
+    "sleepPerIntDelta": 0.05,  // per point of player INT over monster INT
+    "sleepPerLevelDelta": 0.02,  // per level of player over monster
+    "sleepUndeadChance": 0.01,          // undead nearly immune
+    "sleepHumanAnimalMultiplier": 1.10, // humans and animals are easier
+    "feebleMindIntDivisor": 2,          // monster INT reduced by playerINT / this (never below 1)
+    "disintegrateBaseChance": 0.13,     // chance a scroll is destroyed on use: base - intWeight*INT - dexWeight*DEX + perDungeonLevel*floor
+    "disintegrateIntWeight": 0.00667,  // chance removed per point of player INT (original: 0.01 * 0.667)
+    "disintegrateDexWeight": 0.00333,  // chance removed per point of player DEX (original: 0.01 * 0.333)
+    "disintegratePerDungeonLevel": 0.03,  // chance added per dungeon floor (deeper = scrolls fail more)
+    "disintegrateMinChance": 0.01,  // floor on the failure chance
+    "invisibilityMinTurns": 6,          // invisibility can't expire before this many steps ...
+    "invisibilityExpiryPerTurn": 0.0014 // ... then the expiry chance grows by this each step (about 29 steps on average)
+  },
+  "score": {  // Score.lua kScore*
+    "perPlayerLevel": 10,  // points per player level gained
+    "multiplierBossKilled": 10,  // points = monster XP * this when a boss dies
+    "perLevelTreasureFound": 5,  // points per floor level when a level treasure is found
+    "multiplierMonsterKilled": 2,  // points = monster XP * this per kill
+    "multiplierMonsterCharmed": 1,  // points = monster XP * this per charm
+    "fullyCompletedFloor": 15,  // points per floor level for fully completing a floor
+    "perStepTaken": 1,  // points per step taken (applied at game end)
+    "perHPHealed": 1,  // points per HP healed in the temple
+    "multiplierSoldCharmee": 1,  // points = monster level * this when a charmee is sold
+    "perLevelSecretFound": 5,  // points when a floor's secret is found, a flat amount (once per floor; the name is the original's, Score.lua pays it flat too)
+    "perLevelFountainDrink": 10  // points for drinking from a fountain, a flat amount (the name is the original's, Score.lua pays it flat too)
+  },
+  "player": {  // Player.lua starting values
+    "level": 1,  // starting character level
+    "experience": 0,            // starting XP
+    "expToNextLevel": 20,      // XP needed for level 2 (later levels use the progression formula)
+    "maxHP": 10,                // starting max HP (recalculated from VIT and gear once you equip)
+    "maxMP": 10,                // starting max MP
+    "gold": 0,                  // starting gold
+    "ac": 0,                    // starting armor class
+    "score": 0,                 // starting score
+    "startingItemLevel": 2,     // level of the one random item (or scroll) a new character starts with
+    "statRollMin": 8,           // character creation: each stat rolls between this ...
+    "statRollMax": 18,          // ... and this (Player:RandomizeStats)
+    "baseStats": { "STR": 0, "DEX": 0, "INT": 0, "VIT": 0, "CHA": 0 }  // starting base stats (before the character-creation reroll)
+  }
+}

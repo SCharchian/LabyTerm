@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# Drop-down control for LabyTerm on Hyprland: a floating window docked under the bar on the
+# special workspace "labyterm".
+#
+#   labyterm-toggle [--anchor X]  not running: start it; visible: hide it; hidden: show and focus it.
+#                                 The window is docked under the bar, centered on screen column X (logical px;
+#                                 the bar widget passes its own center). X is remembered for the next call.
+#                                 Docking happens at launch only; a window you moved stays where you put it.
+#   labyterm-toggle --dock     put a running game back under the bar (and show it if hidden)
+#   labyterm-toggle --status   print one of: stopped, hidden, visible
+#   labyterm-toggle --hide     hide the drop-down if it is showing, otherwise do nothing (never shows it)
+#   labyterm-toggle --geometry print JSON: the drop-down's window rectangle and each monitor's origin and bar
+#                              height (the widget's click-away overlay uses it)
+#
+# This controls the drop-down only: the LabyTerm window on the special workspace. A LabyTerm started from the
+# launcher or a terminal (a normal window) is a separate game; it is never moved, hidden or focused here, and
+# it does not count as "running".
+#
+# The game itself quits only from inside the game. Hiding just closes the special
+# workspace (the game sees the focus loss and pauses its audio and torch).
+set -u
+
+ANCHOR_FILE=${XDG_RUNTIME_DIR:-/tmp}/labyterm-anchor
+if [[ ${1:-} == --anchor && -n ${2:-} ]]; then echo "$2" > "$ANCHOR_FILE"; shift 2; fi
+REDOCK=0; if [[ ${1:-} == --dock ]]; then REDOCK=1; shift; fi
+GAP=${LABYTERM_GAP:-4}
+
+WS=labyterm
+CLASS=labyterm
+CELL=${LABYTERM_CELL:-16}
+MARGIN=${LABYTERM_MARGIN:-10}  # logical px of background around the grid, so window-border effects do not cover the edge text
+HERE=$(dirname "$(readlink -f "$0")")
+
+# The drop-down's window: the LabyTerm window on the special workspace (empty if there is none).
+addr=$(hyprctl clients -j | jq -r --arg c "$CLASS" --arg w "special:$WS" 'map(select(.class == $c and .workspace.name == $w)) | first | .address // empty')
+shown=$(hyprctl monitors -j | jq -r --arg w "special:$WS" 'any(.[]; .specialWorkspace.name == $w)')
+
+if [[ ${1:-} == --status ]]; then
+  if [[ -z $addr ]]; then echo stopped
+  elif [[ $shown == true ]]; then echo visible
+  else echo hidden; fi
+  exit 0
+fi
+
+if [[ ${1:-} == --hide ]]; then
+  [[ -n $addr && $shown == true ]] && hyprctl dispatch "hl.dsp.workspace.toggle_special('$WS')" >/dev/null
+  exit 0
+fi
+
+if [[ ${1:-} == --geometry ]]; then
+  jq -n --argjson c "$(hyprctl clients -j)" --argjson m "$(hyprctl monitors -j)" --arg w "special:$WS" --arg cl "$CLASS" '{
+    game: ($c | map(select(.class == $cl and .workspace.name == $w)) | first
+           | if . == null then null else {x: .at[0], y: .at[1], w: .size[0], h: .size[1]} end),
+    monitors: ($m | map({name, x, y, top: .reserved[1]}))}'
+  exit 0
+fi
+
+# Move the drop-down's window (address $3) under the bar, horizontally centered on the anchor but kept on the screen.
+dock() {
+  local a=$1 x y
+  read -r x y < <(hyprctl -j monitors | jq -r --arg a "$a" --argjson cw "$2" '
+    (map(select(.focused)) | first) as $m
+    | ($m.width / $m.scale) as $mw
+    | (if $a == "" then $mw / 2 else ($a | tonumber) end - $cw / 2) as $l
+    | [($m.x + ([[$l, 4] | max, $mw - $cw - 4] | min) | round), ($m.y + $m.reserved[1] + '"$GAP"' | round)] | "\(.[0]) \(.[1])"')
+  hyprctl dispatch "hl.dsp.window.move({x=$x, y=$y, window='address:$3'})" >/dev/null
+}
+
+anchor=$(cat "$ANCHOR_FILE" 2>/dev/null || true)
+
+# Width of the game's window in logical px: measured once it exists (up to 3 s), so docking is exact.
+dock_when_mapped() {
+  local a w i
+  for i in {1..30}; do
+    read -r a w < <(hyprctl clients -j | jq -r --arg c "$CLASS" --arg ws "special:$WS" '
+      map(select(.class == $c and .mapped and .workspace.name == $ws)) | first | select(. != null) | "\(.address) \(.size[0])"')
+    [[ -n ${a:-} && ${w:-0} -gt 0 ]] && { dock "$anchor" "$w" "$a"; return; }
+    sleep 0.1
+  done
+}
+
+if [[ -n $addr ]]; then
+  # Running (shown or hidden): flip the drop-down, keeping the position it has. Showing it focuses the game.
+  if ((REDOCK)); then
+    w=$(hyprctl clients -j | jq -r --arg a "$addr" 'map(select(.address == $a)) | first | .size[0]')
+    dock "$anchor" "$w" "$addr"
+    [[ $shown == true ]] && exit 0
+  fi
+  hyprctl dispatch "hl.dsp.workspace.toggle_special('$WS')" >/dev/null
+  exit 0
+fi
+
+# Not running. Window rules ride on the spawn, so they only apply if the game itself
+# is what gets spawned; the first-time build runs in a terminal, so leave that alone.
+if bin=$("$HERE/labyterm-launch" --which); then
+  hyprctl dispatch "hl.dsp.exec_cmd('env LABYTERM_CELL=$CELL LABYTERM_MARGIN=$MARGIN LABYTERM_SNAP=1 \"$bin\"', {float=true, workspace='special:$WS'})" >/dev/null
+  dock_when_mapped
+else
+  exec "$HERE/labyterm-launch"
+fi

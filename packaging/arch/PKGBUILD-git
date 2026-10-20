@@ -1,0 +1,38 @@
+# Maintainer: Sam Charchian <147100012+SCharchian@users.noreply.github.com>
+# labyterm-git: builds the current main (copy this file to a PKGBUILD in an empty directory). For testing from another
+# repo, set LABYTERM_GIT_URL, e.g. LABYTERM_GIT_URL=git://192.168.1.5/game.git makepkg -si
+pkgname=labyterm-git
+pkgver=1.0.0.r0.g0000000
+pkgrel=1
+pkgdesc='First-person dungeon crawler drawn as colored text cells, themed from your Omarchy theme (git version)'
+arch=('x86_64')
+url='https://github.com/SCharchian/LabyTerm'
+license=('MIT' 'CC-BY-4.0')
+depends=('sdl3' 'gcc-libs' 'hicolor-icon-theme')
+makedepends=('git' 'cmake' 'ninja' 'shaderc' 'nlohmann-json')
+provides=('labyterm')
+conflicts=('labyterm')
+source=("labyterm::git+${LABYTERM_GIT_URL:-$url.git}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd labyterm
+  # <CMake version>.r<commits since the last v* tag, or total commits>.g<hash>
+  local v; v=$(sed -n 's/^project(LabyTerm VERSION \([0-9][0-9.]*\).*/\1/p' CMakeLists.txt)
+  printf '%s.r%s.g%s' "$v" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cmake -S labyterm -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DLABYTERM_DEBUG_KEYS=OFF \
+    -DLABYTERM_SOURCE_DATA_DIR=/usr/share/labyterm
+  cmake --build build --target labyterm
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 labyterm/LICENSE "$pkgdir/usr/share/licenses/labyterm/LICENSE"
+  install -Dm644 labyterm/LICENSE-ART.txt "$pkgdir/usr/share/licenses/labyterm/LICENSE-ART.txt"
+}

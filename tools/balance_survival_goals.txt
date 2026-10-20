@@ -1,0 +1,35 @@
+## This Document guides Labyterm game balance work with survivability goals per level
+
+<These are rough/flexible numbers, subject to an (fairly simple) algorithmic curve>
+Wave%   Still Alive	Rough feel
+1	92%	Nearly everyone clears; learning phase
+2	89%	Still very safe
+3	80%	First light pressure
+4	72%	Gear starts to feel relevant
+5	65%	Clear milestone; most players here
+6	56%
+8	50%	Approaching the midpoint of the player base
+10	40%	Mid-game wall for many
+12	32%	Skill/build differentiation is strong
+15	20%	Solid run for an average competent player
+20	10–12%	Good run
+25	5–6%	Strong run
+30	~2–3%	Expert territory
+40	<1%	Very skilled + favorable build/luck
+50+	<0.2%	Rare; near the practical edge
+
+Practical design notes that support this curve
+
+Scale multiple dimensions, not just HP. Enemy HP, Enemy damage, frequency of enemy special abilities, quality of loot drops, and prefixed enemy frequency all contribute, other knobs may be useful as well.
+
+Pure HP inflation feels artificial.
+
+Make gear upgrades meaningful and (possibly) synergistic so good builds can meaningfully stretch further (this is what creates the long tail of skilled players).  Perhaps all weapons with the same prefix and a bonus dependant upon the prefix and number of items carried with that prefix.
+
+Mild “sawtooth” or recovery levels help. A slightly easier wave after a hard one, or boss waves that are spikes but give stronger rewards, keeps tension without pure frustration.
+
+Playtest with a range of skill levels and watch where the actual survival curve lands. The numbers above are targets; real player data will tell you if early waves are too trivial or if the mid-game wall is too steep.
+
+Optional meta-progression (permanent unlocks between runs) can further flatten the early curve for returning players without changing the core single-run difficulty.
+
+This produces an experience where most people get a satisfying run that ends in the mid-game, skilled players regularly push into the 20s, and a small dedicated group chases high scores— a middle ground between casual and hardcore players.

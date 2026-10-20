@@ -1,0 +1,10 @@
+build/
+.cache/
+compile_commands.json
+__pycache__/
+build-release/
+build-*/
+scratch/
+.claude/
+CLAUDE.local.md
+/private/

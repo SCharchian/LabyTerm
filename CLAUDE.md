@@ -1,0 +1,33 @@
+# LabyTerm
+
+C++ port of the Playdate game *Labyrinth* that renders as colored text cells (octant mosaics) in a terminal-style SDL window, themed from the Omarchy theme. It is a spiritual port, not a clone: there is far more screen, color, CPU and sound than on a 1-bit Playdate, so deliberate departures from the original are fine. Game rules and data started out faithful, but strict parity is not a goal: deviating a little is fine, and will happen anyway when the game is balanced.
+
+The Playdate original (Lua + art) is not part of this repository, and nothing here depends on it: the game, the data (`data/*.json`, `data/art`, `data/audio`) and every tool and test are self-contained. Comments that cite original Lua files (`Monster.lua` etc.) are provenance only.
+
+## Build and run
+- `tools/build.sh [--target labyterm|walk_dump|...]` configures (Release) and builds into `build/`. Tests: `ctest --test-dir build`.
+- Headless screenshot of any screen, no game needed: `build/walk_dump <seed> <moves> out.png [cellH] [crt]`. The dungeon is drawn in the default Text maze style; `WALK_MAZE=pixel` gives the Pixel Art style (octant mosaic). Moves: `U D L R` step/turn, `E` Enter, `T`/`B` jump next to the level chest / boss, `F` start a fight, `V` ride the elevator, `A` turn the glide on, `W` settle the fight camera, `H` the start screen, lowercase = hotkeys. E.g. `TUE` = open the level chest. `WALK_LABEL="seed 7"` replaces the corner text. For screenshots with the real (non-debug) key hints, use a `-DLABYTERM_DEBUG_KEYS=OFF` build. The README pictures in `docs/images/` are hand-taken screenshots, not generated.
+- Art: `tools/art.sh [set]` renders `build/art/<set>.png` (`watch` re-renders on save); `build/view_dump` renders one view (`SS=2 VIEW=95,6,0.6 CELL=60` matches the game's camera; the defaults hide one-pixel-row differences).
+- Release builds use `-DLABYTERM_DEBUG_KEYS=OFF`; every DEBUG hotkey must sit behind that switch (`tools/test_release_compile.sh` checks it). In-game debug keys: `W` in a fight wins instantly, `O`/`P` while walking drops a health/mana orb chest, `G` toggles encounters, `H` rests, `L` levels up (adds the XP it needs).
+- Version: `project(LabyTerm VERSION ...)` in `CMakeLists.txt` is the single source; `tools/check_version.sh` checks that the Omarchy manifest, the PKGBUILD and the top `CHANGELOG.md` entry agree.
+
+## Layout
+- `src/core` tuning/RNG/data loading; `src/game` rules (Dungeon, Combat, Monster, Hero, Walker); `src/render` cell grid, mosaic, glyph atlas, SDL backend, CRT filter; `src/audio`; `src/platform/Theme`; `src/ui` screens.
+- `src/ui/WalkSession.cpp` is the game session (input, state, overlay contents); `MainScreen.cpp` draws the whole screen (`drawOverlay` for panels); `PanelKit.hpp` shared panel helpers; `CorridorRenderer.cpp` is the procedural first-person view (ray tracer + all object art); `ViewPainter.cpp` colors the view layers.
+- `data/gameplay.json` is the single source of truth for tuning (JSON with required `//` comments); `tools/gen_tuning.py` generates `src/core/TuningParams.hpp` from it. Users override via `~/.config/labyterm/tuning.json` (live reload). Other data (`monsters.json`, `equipment.json`, `art/`, `audio/`) was converted from the original game's files once; the converters are not part of this repo.
+- `packaging/`: desktop file and icons, the Omarchy plugin (`omarchy-plugin/`), the Arch PKGBUILDs (`arch/`: `PKGBUILD` is the recipe for Omarchy's package repository `omacom/omarchy-pkgs` and the AUR, `omarchy-package.json` becomes its `.omarchy/package.json`).
+- Tests are `tests/*.cpp` run by ctest, `tests/level_test.cpp` checks the level generator's properties. `tests/*_dump.cpp` are headless inspection tools.
+
+## Non-obvious decisions and pitfalls
+- The RNG (`src/core/Rng.hpp`) is a seedable `std::mt19937_64`; random-number sequences do not matter and are not compatible with the original, so new features may draw from the RNG wherever convenient.
+- Balance: `tools/balance_report.py --seeds 5000` writes `build/balance/REPORT.md`; its section 0 is the pass/fail target check.
+- Persistence: `~/.local/state/labyterm/` (`LABYTERM_STATE_DIR`) holds `save.json` (written ONLY from the town sign post, never automatically, single use), `graveyard.json` (the dead hero's ghost) and `scores.json` (top 10). Each file carries a `"version"` (`kSaveVersion`, `src/game/Persist.hpp`); a file with another version is treated as unreadable, so changing the format needs a migration. Tests and headless tools never touch the state folder unless they call `WalkSession::setStateDir`.
+- Input: arrows + Enter/Z, Esc backs out. No PgUp/PgDn, no classic "V" view (removed). Elevator rides use Up/Down.
+- Art style: everything except enemies looks like vector art (crisp lines, flat theme tones, a shade tone for depth, no noise texture; the distance-fog dither is welcome). Enemies, the boss lair and its entrance animation, and the town's pictures (sign post, Temple, Blacksmith, BeastMart) keep their bitmaps from the original game, bundled in `data/art` (the monster sprites there are the native 2x two-tone PNGs: R = tone, A = alpha; edit them directly).
+- Town UI is part of the game world, not a system panel: no `MenuPanel` for the town; shop boxes and the sign post's caption are text labels on the picture (`SceneLabel`, `ui/TownArt`).
+- Locked art (elevator, chests, level treasure, doorways, lair): don't change its look unless asked. Light comes from the RIGHT, so left faces use the shade tone (`kShadeMix`). Preview through `tools/art.sh`: it draws via the game's own path (supersample 2, two colors per 2x4 cell), which is why raw renders can mislead.
+- `corridor_test` checks mirror symmetry, so its fixture uses only symmetric objects (not the elevator, treasure or doorways).
+- Audio: the sounds are standard WAV files in `data/audio/` (originally converted from the Playdate `.pda` files, which are gone from the tooling), read at runtime. `audio_test` checks every file decodes cleanly.
+- Pixel-level cleanliness at game scale matters: check art changes at the game's own scale, not only in a zoomed render.
+- Plugin updates: `packaging/omarchy-plugin/labyterm-launch` compares the plugin's `manifest.json` version with the game it built and offers to rebuild the release tag `v<version>`. So the manifest version must equal the game version and every game release needs a tag `v<version>`; a plugin-only fix must NOT bump the manifest version (`tools/check_version.sh` enforces the first rule).
+- Omarchy plugin: its folder is a git checkout that `omarchy plugin update` fast-forwards, so nothing in it may need editing by the user; configuration goes through environment variables.

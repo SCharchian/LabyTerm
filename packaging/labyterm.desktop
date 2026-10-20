@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=LabyTerm
+GenericName=Dungeon crawler
+Comment=First-person dungeon crawler drawn as colored text cells, themed from your Omarchy theme
+Exec=labyterm
+Icon=labyterm
+Terminal=false
+StartupNotify=false
+Categories=Game;RolePlaying;
+Keywords=labyrinth;dungeon;roguelike;game;

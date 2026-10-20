@@ -1,0 +1,1088 @@
+{
+  "prefixes": {
+    "weapon": [
+      {
+        "Name": "Ice",
+        "Level": 1,
+        "AC": 1,
+        "Bonuses": {"STR": -1, "DEX": -2, "INT": 1, "VIT": 2, "CHA": 0, "HP": 1, "MP": 0}
+      },
+      {
+        "Name": "Flame",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Apt",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 1, "DEX": 0, "INT": 1, "VIT": 1, "CHA": 0, "HP": 1, "MP": 1}
+      },
+      {
+        "Name": "Cursed",
+        "Level": 1,
+        "AC": 2,
+        "Bonuses": {"STR": -1, "DEX": -1, "INT": -1, "VIT": 1, "CHA": -1, "HP": 0, "MP": 2}
+      },
+      {
+        "Name": "Thunder",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 2, "DEX": -1, "INT": 0, "VIT": 1, "CHA": 0, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Vorpal",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 2, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 0, "HP": 1, "MP": 0}
+      },
+      {
+        "Name": "Shining",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 2, "DEX": -1, "INT": 1, "VIT": -1, "CHA": 1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Deadly",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 2, "DEX": 2, "INT": 0, "VIT": -2, "CHA": -1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Wise",
+        "Level": 1,
+        "AC": -1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 0, "HP": 0, "MP": 2}
+      },
+      {
+        "Name": "Blessed",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 1, "VIT": -1, "CHA": -1, "HP": 1, "MP": 0}
+      },
+      {
+        "Name": "Swift",
+        "Level": 1,
+        "AC": 2,
+        "Bonuses": {"STR": 0, "DEX": 2, "INT": 0, "VIT": -2, "CHA": 0, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Arcane",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 1, "CHA": 0, "HP": -1, "MP": 2}
+      }
+    ],
+    "armor": [
+      {
+        "Name": "Sturdy",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 1, "CHA": 0, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Ornate",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 1, "CHA": 0, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Hard",
+        "Level": 1,
+        "AC": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 2, "CHA": 0, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Cursed",
+        "Level": 1,
+        "AC": 1,
+        "Bonuses": {"STR": -1, "DEX": -1, "INT": -1, "VIT": -1, "CHA": -1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Radiant",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 1, "VIT": 1, "CHA": 1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Protective",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 1, "CHA": 0, "HP": 10, "MP": 0}
+      },
+      {
+        "Name": "Mystic",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 1, "CHA": 1, "HP": 0, "MP": 2}
+      },
+      {
+        "Name": "Shadow",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 2, "INT": 1, "VIT": 1, "CHA": 1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Magic",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 2, "VIT": 0, "CHA": 1, "HP": 0, "MP": 2}
+      },
+      {
+        "Name": "Blessed",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 2, "CHA": 0, "HP": 1, "MP": 1}
+      },
+      {
+        "Name": "Quick",
+        "Level": 1,
+        "AC": 2,
+        "Bonuses": {"STR": 0, "DEX": 2, "INT": 0, "VIT": 0, "CHA": 0, "HP": 2, "MP": 0}
+      },
+      {
+        "Name": "Plated",
+        "Level": 1,
+        "AC": 2,
+        "Bonuses": {"STR": 1, "DEX": 0, "INT": 0, "VIT": 2, "CHA": 0, "HP": 2, "MP": -1}
+      }
+    ],
+    "accessory": [
+      {
+        "Name": "Glowing",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 1, "DEX": -1, "INT": 1, "VIT": 0, "CHA": 1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Jeweled",
+        "Level": 1,
+        "AC": 1,
+        "Bonuses": {"STR": 0, "DEX": -1, "INT": 0, "VIT": 1, "CHA": 2, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Cursed",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": -1, "DEX": -2, "INT": -1, "VIT": 2, "CHA": -1, "HP": 1, "MP": 0}
+      },
+      {
+        "Name": "Blessed",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 1, "DEX": 2, "INT": 1, "VIT": -2, "CHA": 1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Radiant",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 2, "VIT": -1, "CHA": 1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Protective",
+        "Level": 1,
+        "AC": 2,
+        "Bonuses": {"STR": -1, "DEX": 2, "INT": 0, "VIT": 0, "CHA": 0, "HP": 2, "MP": 0}
+      },
+      {
+        "Name": "Magic",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": -1, "INT": 2, "VIT": 0, "CHA": 1, "HP": 0, "MP": 2}
+      },
+      {
+        "Name": "Shadowed",
+        "Level": 1,
+        "AC": 1,
+        "Bonuses": {"STR": 1, "DEX": 2, "INT": 0, "VIT": 0, "CHA": -1, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Shimmering",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 1, "CHA": 2, "HP": 0, "MP": 0}
+      },
+      {
+        "Name": "Ancient",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 2, "CHA": -1, "HP": 1, "MP": 0}
+      },
+      {
+        "Name": "Ornate",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 1, "VIT": 0, "CHA": 2, "HP": 0, "MP": -1}
+      },
+      {
+        "Name": "Mystical",
+        "Level": 1,
+        "AC": 0,
+        "Bonuses": {"STR": 0, "DEX": -1, "INT": 2, "VIT": 0, "CHA": 0, "HP": 0, "MP": 2}
+      }
+    ]
+  },
+  "items": {
+    "Belt": [
+      {
+        "Name": "Rope Belt",
+        "Type": "Belt",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 0, "CHA": -1}
+      },
+      {
+        "Name": "Silk Belt",
+        "Type": "Belt",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": -1, "DEX": 1, "INT": 0, "VIT": -1, "CHA": 1}
+      },
+      {
+        "Name": "Belt",
+        "Type": "Belt",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Sash",
+        "Type": "Belt",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Girdle",
+        "Type": "Belt",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": -1, "INT": 0, "VIT": 0, "CHA": 2}
+      },
+      {
+        "Name": "Waistband",
+        "Type": "Belt",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": -1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "Name": "Corset",
+        "Type": "Belt",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Void Belt",
+        "Type": "Belt",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 2,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 1, "CHA": 1}
+      }
+    ],
+    "Boots": [
+      {
+        "Name": "Foot Wraps",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Boots",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Greaves",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": -1, "INT": 0, "VIT": 1, "CHA": -1}
+      },
+      {
+        "Name": "Silk Boots",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": -1, "CHA": 1}
+      },
+      {
+        "Name": "Shoes",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 1,
+        "HP": -1,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 1, "CHA": 2}
+      },
+      {
+        "Name": "War Boots",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 2,
+        "HP": 2,
+        "MP": -2,
+        "Bonuses": {"STR": 2, "DEX": 0, "INT": -2, "VIT": 2, "CHA": -2}
+      },
+      {
+        "Name": "Sandals",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 2,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Sabatons",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": -1,
+        "Bonuses": {"STR": 2, "DEX": -2, "INT": 0, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Sharp Boots",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": -1, "VIT": 0, "CHA": 2}
+      },
+      {
+        "Name": "Shadowsteps",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 2,
+        "HP": 1,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 2, "INT": 0, "VIT": -1, "CHA": 1}
+      },
+      {
+        "Name": "Clogs",
+        "Type": "Boots",
+        "Level": 1,
+        "AC": 1,
+        "HP": 1,
+        "MP": 1,
+        "Bonuses": {"STR": 2, "DEX": -1, "INT": 0, "VIT": 0, "CHA": 1}
+      }
+    ],
+    "ChestArmor": [
+      {
+        "Name": "Robe",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 1, "CHA": 0}
+      },
+      {
+        "Name": "Toga",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Vest",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Chainmail",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": -2,
+        "Bonuses": {"STR": 1, "DEX": -1, "INT": 0, "VIT": 1, "CHA": 0}
+      },
+      {
+        "Name": "Plate Armor",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": -1,
+        "Bonuses": {"STR": 1, "DEX": -2, "INT": -2, "VIT": 1, "CHA": -1}
+      },
+      {
+        "Name": "Wizard Robe",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 2}
+      },
+      {
+        "Name": "Cloak",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Dragon Scale",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": -2,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 1, "VIT": -1, "CHA": 1}
+      },
+      {
+        "Name": "Corset",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": -2,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 1, "VIT": 1, "CHA": 2}
+      },
+      {
+        "Name": "Surcoat",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 2,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 1, "CHA": 2}
+      },
+      {
+        "Name": "Cloak of Shadows",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": -2,
+        "Bonuses": {"STR": -2, "DEX": 2, "INT": 0, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Silk Robe",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": -1,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 2, "INT": 0, "VIT": -1, "CHA": 2}
+      },
+      {
+        "Name": "Dark Tunic",
+        "Type": "ChestArmor",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 1,
+        "MP": -1,
+        "Bonuses": {"STR": 2, "DEX": 1, "INT": -1, "VIT": 0, "CHA": 1}
+      }
+    ],
+    "Gloves": [
+      {
+        "Name": "Knit Gloves",
+        "Type": "Gloves",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Silk Gloves",
+        "Type": "Gloves",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": -1, "DEX": 1, "INT": 0, "VIT": -1, "CHA": 1}
+      },
+      {
+        "Name": "Gauntlets",
+        "Type": "Gloves",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": -1, "INT": 0, "VIT": 0, "CHA": -1}
+      },
+      {
+        "Name": "Mage Gloves",
+        "Type": "Gloves",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Mitts",
+        "Type": "Gloves",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": 2, "INT": -1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "Name": "Grips",
+        "Type": "Gloves",
+        "Level": 1,
+        "AC": 2,
+        "HP": 2,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 2, "CHA": 1}
+      },
+      {
+        "Name": "Bracers",
+        "Type": "Gloves",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 0, "VIT": 1, "CHA": -1}
+      },
+      {
+        "Name": "Kittn Mittnz",
+        "Type": "Gloves",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 2,
+        "Bonuses": {"STR": 0, "DEX": -2, "INT": -1, "VIT": 0, "CHA": 3}
+      }
+    ],
+    "Helmet": [
+      {
+        "Name": "Hood",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Cap",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Iron Helm",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": -1, "INT": 0, "VIT": 0, "CHA": -1}
+      },
+      {
+        "Name": "Visor",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": 0, "INT": 0, "VIT": 2, "CHA": -1}
+      },
+      {
+        "Name": "Mystic Hat",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": -1, "DEX": 0, "INT": 1, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Royal Crown",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": -1,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 1, "DEX": -1, "INT": 2, "VIT": -2, "CHA": 1}
+      },
+      {
+        "Name": "Circlet",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 2,
+        "Bonuses": {"STR": -1, "DEX": -1, "INT": 2, "VIT": -2, "CHA": 2}
+      },
+      {
+        "Name": "Mask",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 2,
+        "HP": 1,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": 0, "INT": 0, "VIT": 1, "CHA": 2}
+      },
+      {
+        "Name": "Headband",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": -2,
+        "HP": -2,
+        "MP": -2,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Moon Helm",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 0,
+        "HP": -2,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Veil",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 0,
+        "HP": 1,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 2, "CHA": 1}
+      },
+      {
+        "Name": "Turban",
+        "Type": "Helmet",
+        "Level": 1,
+        "AC": 1,
+        "HP": -1,
+        "MP": 1,
+        "Bonuses": {"STR": -1, "DEX": -1, "INT": 1, "VIT": 2, "CHA": 1}
+      }
+    ],
+    "Necklace": [
+      {
+        "Name": "Locket",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": -1, "INT": 0, "VIT": 0, "CHA": -1}
+      },
+      {
+        "Name": "Choker",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 1,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Pendant",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 2,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 1, "CHA": 1}
+      },
+      {
+        "Name": "Amulet",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 2, "DEX": 0, "INT": 1, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Medal",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Torc",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": -1, "DEX": 0, "INT": 1, "VIT": 0, "CHA": 2}
+      },
+      {
+        "Name": "Necklace",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 1, "VIT": -2, "CHA": 1}
+      },
+      {
+        "Name": "Mantle",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Talisman",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": -2,
+        "HP": -2,
+        "MP": -2,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Scarf",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": -1,
+        "MP": 1,
+        "Bonuses": {"STR": -1, "DEX": 0, "INT": 1, "VIT": 1, "CHA": 1}
+      },
+      {
+        "Name": "Cravat",
+        "Type": "Necklace",
+        "Prefix": "",
+        "Level": 1,
+        "AC": -2,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 1, "VIT": -1, "CHA": 1}
+      }
+    ],
+    "Ring": [
+      {
+        "Name": "Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Jade Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 2,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Band",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 2, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Fancy Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Topaz Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 2, "INT": 2, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Skull Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 2, "DEX": 2, "INT": -1, "VIT": -2, "CHA": 0}
+      },
+      {
+        "Name": "Onyx Band",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": -1,
+        "Bonuses": {"STR": 2, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Moon Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": -2,
+        "MP": 1,
+        "Bonuses": {"STR": 0, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Odd Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": -2,
+        "HP": -2,
+        "MP": -2,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 1, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Mystic Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 2,
+        "Bonuses": {"STR": -1, "DEX": 0, "INT": 2, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Royal Ring",
+        "Type": "Ring",
+        "Prefix": "",
+        "Level": 1,
+        "AC": -1,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 2, "VIT": -2, "CHA": 1}
+      }
+    ],
+    "Weapon": [
+      {
+        "Name": "Club",
+        "Type": "Weapon",
+        "WeaponType": "BLUNT",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Sword",
+        "Type": "Weapon",
+        "WeaponType": "SHARP",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": -1,
+        "Bonuses": {"STR": 2, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Axe",
+        "Type": "Weapon",
+        "WeaponType": "SHARP",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 1, "DEX": -1, "INT": 0, "VIT": 0, "CHA": -1}
+      },
+      {
+        "Name": "Dagger",
+        "Type": "Weapon",
+        "WeaponType": "SHARP",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 0, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Katana",
+        "Type": "Weapon",
+        "WeaponType": "SHARP",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 2, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 1}
+      },
+      {
+        "Name": "Staff",
+        "Type": "Weapon",
+        "WeaponType": "MAGICAL",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": -1, "DEX": -1, "INT": 2, "VIT": 0, "CHA": 0}
+      },
+      {
+        "Name": "Mace",
+        "Type": "Weapon",
+        "WeaponType": "BLUNT",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 2, "DEX": 0, "INT": 2, "VIT": 2, "CHA": -2}
+      },
+      {
+        "Name": "Spear",
+        "Type": "Weapon",
+        "WeaponType": "SHARP",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 2, "DEX": -2, "INT": 1, "VIT": 0, "CHA": -1}
+      },
+      {
+        "Name": "Hammer",
+        "Type": "Weapon",
+        "WeaponType": "BLUNT",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": -2,
+        "Bonuses": {"STR": 1, "DEX": 2, "INT": 0, "VIT": 0, "CHA": -2}
+      },
+      {
+        "Name": "Wand",
+        "Type": "Weapon",
+        "WeaponType": "MAGICAL",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 0,
+        "HP": 0,
+        "MP": 1,
+        "Bonuses": {"STR": -2, "DEX": 0, "INT": 1, "VIT": 2, "CHA": 1}
+      },
+      {
+        "Name": "Rapier",
+        "Type": "Weapon",
+        "WeaponType": "SHARP",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 2,
+        "HP": 0,
+        "MP": 0,
+        "Bonuses": {"STR": 2, "DEX": 1, "INT": 0, "VIT": 0, "CHA": 2}
+      },
+      {
+        "Name": "FlameSword",
+        "Type": "Weapon",
+        "WeaponType": "MAGICAL",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": -1,
+        "MP": 1,
+        "Bonuses": {"STR": 2, "DEX": 2, "INT": 2, "VIT": -1, "CHA": 1}
+      },
+      {
+        "Name": "Blade",
+        "Type": "Weapon",
+        "WeaponType": "SHARP",
+        "Prefix": "",
+        "Level": 1,
+        "AC": 1,
+        "HP": 1,
+        "MP": 1,
+        "Bonuses": {"STR": 1, "DEX": 1, "INT": 1, "VIT": 1, "CHA": 1}
+      }
+    ]
+  }
+}

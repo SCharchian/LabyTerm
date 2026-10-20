@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.scharchian.labyterm",
+  "name": "LabyTerm",
+  "version": "1.0.0",
+  "author": "Sam Charchian",
+  "description": "LabyTerm is a first-person roguelike dungeon crawler designed to match your Omarchy desktop",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "LabyTerm",
+    "description": "Click to start LabyTerm, then to hide and show it as a drop-down window",
+    "category": "Games",
+    "allowMultiple": false
+  }
+}

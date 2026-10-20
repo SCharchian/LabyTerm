@@ -1,0 +1,70 @@
+# How to play LabyTerm
+LabyTerm is an old-school first-person roguelike dungeon crawler, a terminal-style port of my Playdate game, Labyrinth. It has:
+- Perma-death (you can save in town, and load it once)
+- Turn-based combat (take your time!)
+- Randomly generated levels, monsters and loot
+- Endless gameplay: nobody knows how deep the Labyrinth goes.
+
+# Keys
+Up / Down: step forward / back
+Left / Right: turn
+Enter or Z: confirm (open a chest, act)
+Esc: cancel or go back
+S: Scrolls
+I/C: Inventory/Character
+M: full map
+A: Audio (Full / Effects Only / Mute)
+In a fight and in menus, the arrows move the highlight.
+Every key can be changed under Options, Key bindings.
+
+# Your character
+On the start screen choose Enter the Labyrinth. On the next screen you can type a name and re-roll your stats and your one starting item as often as you like, then enter the Labyrinth.
+Your stats:
+Strength: damage
+Dexterity: likelihood to hit, and armor
+Intelligence: scrolls, Trick, and maximum MP
+Vitality: gives and protects health
+Charisma: charming monsters
+You wear one item of each of eight kinds: weapon, helmet, chest armor, gloves, boots, belt, ring and necklace. A new item replaces the old one of the same kind. Everything you carry is worn, and items add to (or take from) your stats, so choose carefully. Once you've replaced an item, the old one is gone for good. Open the Inventory with I/C to see what you wear, your stats and armor.
+Each time you level up you pick a perk: one stat +1, or let Labyrinth choose 2 random stats +1.
+You also hold one of each kind of scroll, and up to two charmed monsters (Charmees).
+
+# The dungeon
+Every floor has three things to find: the elevator (you start on it; it takes you to other floors and back to town), the floor's treasure chest (superior loot), and the floor's boss (tough, but rewards superior loot and experience).
+The map in the top right corner shows what you have seen: your arrow, walls, doors, the elevator, the boss (B) and the treasure (T). Doors open when you walk into them, and trust your eyes (Hint: and your ears!): not every wall is a wall.
+In the elevator, Up and Down pick the floor and Enter rides. Floors where you have beaten the boss cannot be revisited.
+
+# Combat
+Fights start at random as you walk. The action buttons appear in the top right, and you have six actions to choose from.
+Hotkeys for each action also work:
+(A)ttack: uses DEX to hit and STR for damage.
+(C)harm: uses your CHA against the monster's INT. A charmed monster fights for you and soaks up damage. Undead cannot be charmed. You can hold two.
+(S)croll: pick a scroll and cast it.
+(H)ide: let your Charmees fight while you stay behind them. They may break the charm and run, but not before taking a free swipe at you.
+(T)rick: a low-percentage try at killing the monster outright. Your INT is the key.
+(P)ray: a very low chance of being carried instantly to town. Use only in desperation.
+Monster levels and stats count too: a high-level, clever monster is hard to charm.
+
+# Scrolls
+Press S to open your scrolls. Each use costs MP, needs a minimum level and INT, and can be cast again and again until it disintegrates. The disintegration chance depends on your INT and DEX, and rises the deeper you are. A scroll that disintegrates is gone for good, and its MP is still spent. A replacement can be randomly awarded later, as normal.
+Magic Arrow: light damage, double to the undead.
+Holy Water: may kill an undead monster outright. Does nothing to the living.
+Sleep: puts an enemy to sleep. Not for the undead.
+Mag Missile: strong damage, a bonus against the undead.
+Feeble Mind: lowers the monster's INT, so Charm and Trick work better.
+ESP: shows the monster's stats. This is a free action, costs no turn.
+Wizard Eye: reveals the whole floor on the map. Outside of combat only.
+Invisibility: random monsters walk past without noticing you. Undead still see you, and bosses always do. It wears off after a while. Outside of combat only.
+
+# Loot
+Defeating a monster, or finding the level treasure, opens a chest. Compare the stats of what you wear and what you found with Left and Right, then confirm. Items you leave behind are gone for good. Gold is always yours, and health and mana orbs are used on the spot.
+
+# Town
+You reach the town by riding the elevator up from floor 1 (it is a long ride), by the town portal that appears after you beat a boss, or by a successful prayer. A signpost lists what is there:
+Temple: heals all your HP and MP, for free.
+Blacksmith: buys nothing, sells equipment and a scroll. Buying equipment replaces what you wear of that kind, so check the green and red numbers (new item, with what you wear in brackets). Beating a floor's boss restocks his shelves with fresh items appropriate to your level.
+BeastMart: buys your Charmees, for gold. They're valuable!
+The Labyrinth: the elevator back down.
+
+Thank you for playing! Send me feedback at (Labyrinth_Feedback@outlook.com), I'd love to hear from you.
+Sam

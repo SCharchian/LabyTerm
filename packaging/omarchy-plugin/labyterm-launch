@@ -1,0 +1,166 @@
+#!/usr/bin/env bash
+# Start LabyTerm. On the first run, install or build it (in a terminal, so the user sees progress and can answer the
+# one sudo prompt for missing packages). When a game that this plugin built is older than the plugin, offer to
+# rebuild it. A game from a package (the AUR) or from LABYTERM_BIN is never touched: the package manager updates it.
+#
+#   LABYTERM_BIN   use this binary instead of looking for one
+#   LABYTERM_REPO  git URL to build from (default below)
+#   LABYTERM_REF   branch or tag to build (default: the release tag matching this plugin's version, else main)
+#   LABYTERM_NO_AUR=1           skip the offer to install the AUR package (when one exists) and build from source
+#   LABYTERM_NO_UPDATE_CHECK=1  never offer to rebuild an older build
+set -euo pipefail
+
+HERE=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
+# The plugin's version is the game version it was released with (tools/check_version.sh keeps them equal).
+PV=$(sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' "$HERE/manifest.json" 2>/dev/null | head -n 1 || true)
+
+REPO=${LABYTERM_REPO:-https://github.com/SCharchian/LabyTerm.git}
+REF=${LABYTERM_REF:-${PV:+v$PV}}
+REF=${REF:-main}
+HOME_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/labyterm
+SRC=$HOME_DIR/src      # git clone of the source (kept so it can be rebuilt)
+APP=$HOME_DIR/app      # the installed game: bin/labyterm, share/labyterm (data), icons
+BIN=$APP/bin/labyterm
+DECLINED=$HOME_DIR/declined-update   # the version the user said "not now" to
+CMD=$HOME/.local/bin/labyterm        # the `labyterm` terminal command this plugin writes after a build (see install_command)
+CMD_MARK=labyterm-plugin-command     # on its second line, so a `labyterm` that is not ours is never touched or mistaken for ours
+
+# --which: print the binary that would run (exit 1 if it is not built yet, or if it is an old build to be updated).
+# A `labyterm` on the PATH is used (a package, a dev build), except the terminal command written by this plugin, which only wraps $BIN.
+found=
+if [[ -n ${LABYTERM_BIN:-} && -x $LABYTERM_BIN ]]; then found=$LABYTERM_BIN
+elif p=$(command -v labyterm 2>/dev/null) && ! grep -qs "$CMD_MARK" "$p"; then found=$p
+elif [[ -x $BIN ]]; then found=$BIN
+elif [[ -x $SRC/build-release/labyterm ]]; then found=$SRC/build-release/labyterm   # older layout: built in place, never installed
+fi
+
+# Only a game built by this plugin can be stale; ask it for its version.
+stale=0 bv=
+if [[ $found == "$BIN" && -n $PV && -z ${LABYTERM_NO_UPDATE_CHECK:-} ]]; then
+  bv=$("$BIN" --version 2>/dev/null | awk '{print $2}' || true)
+  if [[ -n $bv && $bv != "$PV" && $(printf '%s\n%s\n' "$bv" "$PV" | sort -V | tail -n 1) == "$PV" \
+        && $(cat "$DECLINED" 2>/dev/null || true) != "$PV" ]]; then stale=1; fi
+fi
+
+if [[ ${1:-} == --which ]]; then
+  if [[ -n $found && $stale == 0 ]]; then echo "$found"; exit 0; fi
+  exit 1
+fi
+if [[ -n $found && $stale == 0 ]]; then
+  case ${1:-} in --build-here|--update-here) shift ;; esac   # our own flags (nothing left to do): never pass them to the game
+  # A window opens on the active workspace. With the bar widget's drop-down showing, that is its special workspace,
+  # and the new game would hide with it: close the drop-down first so this one opens on a normal workspace.
+  if command -v hyprctl >/dev/null 2>&1 \
+     && hyprctl monitors -j 2>/dev/null | jq -e 'any(.[]; .specialWorkspace.name == "special:labyterm")' >/dev/null 2>&1; then
+    hyprctl dispatch "hl.dsp.workspace.toggle_special('labyterm')" >/dev/null 2>&1
+  fi
+  exec "$found" "$@"
+fi
+
+# --- first run or update: do it in a terminal -----------------------------------
+mode=${1:-}
+if [[ $mode != --build-here && $mode != --update-here ]]; then
+  if ((stale)); then exec xdg-terminal-exec --title="LabyTerm: update" "$0" --update-here
+  else exec xdg-terminal-exec --title="LabyTerm: first-time build" "$0" --build-here; fi
+fi
+
+pause() { read -rsn1 -p "Press any key to close..."; }
+fail() { echo "LabyTerm build failed: $*" >&2; pause; exit 1; }
+
+if [[ $mode == --update-here ]]; then
+  echo "A newer LabyTerm is available: $PV (you have $bv)."
+  echo "What changed: https://github.com/SCharchian/LabyTerm/blob/main/CHANGELOG.md"
+  if pgrep -x labyterm >/dev/null 2>&1; then
+    echo; echo "LabyTerm is running right now. Quit it from its menu, then start LabyTerm again to update."
+    pause; exit 0
+  fi
+  read -rp "Rebuild it now? (a few minutes) [Y/n] " ok
+  if [[ $ok == [nN]* ]]; then
+    echo "$PV" >"$DECLINED"
+    echo "Not now. You will be asked again when a newer version is out. To update sooner: rm $DECLINED"
+    setsid -f "$BIN" >/dev/null 2>&1
+    exit 0
+  fi
+  echo
+else
+  # First run. Preferred: the AUR package, when it exists (updates then arrive with the normal system update).
+  if [[ -z ${LABYTERM_NO_AUR:-} ]]; then
+    helper=; for h in yay paru; do command -v "$h" >/dev/null 2>&1 && { helper=$h; break; }; done
+    if [[ -n $helper ]] && "$helper" -Si labyterm >/dev/null 2>&1; then
+      echo "LabyTerm is available as the AUR package 'labyterm' (updated with your normal system updates)."
+      read -rp "Install it with $helper? [Y/n] " ok
+      if [[ $ok != [nN]* ]] && "$helper" -S --needed labyterm && command -v labyterm >/dev/null 2>&1; then
+        echo; echo "Installed. Starting LabyTerm."
+        setsid -f labyterm >/dev/null 2>&1
+        exit 0
+      fi
+      echo "Package install did not complete; building from source instead."; echo
+    fi
+  fi
+  echo "LabyTerm is built from source the first time (a few minutes)."
+fi
+
+# The release matching this plugin; if it does not exist (yet), say so and build the main branch.
+git ls-remote --exit-code "$REPO" "refs/tags/$REF" "refs/heads/$REF" >/dev/null 2>&1 \
+  || { echo "Note: '$REF' was not found in $REPO; building the main branch instead."; REF=main; }
+echo "Source: $REPO ($REF)  ->  $SRC"
+echo "Installs to $APP"
+echo
+
+missing=()
+for pkg in git base-devel cmake ninja sdl3 shaderc; do
+  pacman -Qq "$pkg" >/dev/null 2>&1 || missing+=("$pkg")
+done
+if ((${#missing[@]})); then
+  echo "Missing packages: ${missing[*]}"
+  read -rp "Install them with sudo pacman? [y/N] " ok
+  [[ $ok == [yY]* ]] || fail "packages not installed"
+  sudo pacman -S --needed "${missing[@]}" || fail "pacman failed"
+fi
+
+mkdir -p "$(dirname "$SRC")"
+if [[ -d $SRC/.git ]]; then
+  git -C "$SRC" fetch --depth 1 origin "$REF" && git -C "$SRC" checkout -q FETCH_HEAD || fail "git update"
+else
+  git clone --depth 1 --branch "$REF" "$REPO" "$SRC" || fail "git clone"
+fi
+
+cd "$SRC"
+# The compiler's full output goes to a log; the terminal shows progress, and the log's tail if something fails.
+LOG=$HOME_DIR/build.log
+quiet() { "$@" >>"$LOG" 2>&1 || { echo; tail -n 40 "$LOG"; fail "$* (full log: $LOG)"; }; }
+: >"$LOG"
+echo "Configuring..."
+quiet cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DLABYTERM_DEBUG_KEYS=OFF
+if ! cmake --build build-release --target labyterm 2>&1 | tee -a "$LOG" |
+  { grep --line-buffered -o '^\[[0-9]*/[0-9]*\]' || true; } | while read -r step; do printf '\r  Compiling %s ' "$step"; done; then
+  echo; tail -n 40 "$LOG"; fail "compile (full log: $LOG)"
+fi
+echo
+quiet cmake --install build-release --prefix "$APP"
+[[ -x $BIN ]] || fail "no binary produced"
+rm -f "$DECLINED"
+
+# A `labyterm` command for the terminal: a small wrapper, not a symlink, so that starting the game detaches it and the
+# prompt returns, while --version, --check-data and the like still print here. Rewritten on every build; a `labyterm` that
+# this plugin did not write (a package, a dev symlink) is left alone.
+install_command() {
+  if [[ -e $CMD || -L $CMD ]] && ! grep -qs "$CMD_MARK" "$CMD"; then
+    echo "Note: $CMD already exists and was left alone; the terminal command 'labyterm' is not managed by this plugin."
+    return 0
+  fi
+  mkdir -p "$(dirname "$CMD")" && rm -f "$CMD" && cat >"$CMD" <<WRAP && chmod +x "$CMD" && echo "Terminal command: labyterm ($CMD)"
+#!/bin/sh
+# $CMD_MARK: written by the LabyTerm Omarchy plugin on every build; safe to delete
+bin='$BIN'
+[ -x "\$bin" ] || { echo "labyterm: not built yet. Start LabyTerm from the launcher once." >&2; exit 1; }
+case "\${1:-}" in
+  ''|--walk|[0-9]*) setsid -f "\$bin" "\$@" >/dev/null 2>&1 ;;   # a game: detach, so the prompt returns
+  *) exec "\$bin" "\$@" ;;                                       # --version, --check-data and so on: stay in this terminal
+esac
+WRAP
+}
+install_command || echo "Note: could not write $CMD."
+
+echo; echo "Built $("$BIN" --version 2>/dev/null || echo LabyTerm). Starting it."
+setsid -f "$BIN" >/dev/null 2>&1

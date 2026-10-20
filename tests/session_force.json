@@ -1,0 +1,1 @@
+{ "encounters": { "monsterChancePercent": 40 }, "combat": { "playerDamageMultiplier": 30.0, "monsterDamageMultiplier": 0.1 } }
