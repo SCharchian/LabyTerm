@@ -6,7 +6,7 @@ You may use, modify and redistribute LabyTerm, including in your own projects, a
 |---|---|---|
 | Source code (`src/`, `tests/`, `tools/`, `cmake/`, `CMakeLists.txt`, and the scripts, recipes and plugin code in `packaging/`) | MIT | `LICENSE` |
 | Art, audio and game data (`data/art`, `data/audio`, `data/*.json`, `data/help`) | CC BY 4.0 | `LICENSE-ART.txt` |
-| Icons (`packaging/icons/`, `packaging/omarchy-plugin/labyterm.svg`) and documentation images (`docs/images/`) | CC BY 4.0 | `LICENSE-ART.txt` |
+| Icons (`packaging/icons/`, `packaging/omarchy-plugin/labyterm.svg`, `packaging/omarchy-plugin/preview.jpg`) and documentation images (`docs/images/`) | CC BY 4.0 | `LICENSE-ART.txt` |
 | Bundled fonts, stb, nlohmann/json | their own licenses | `THIRD_PARTY.md`, `data/fonts/OFL-*.txt`, `third_party/stb/LICENSE` |
 
 The CC BY 4.0 license on `docs/images/` covers LabyTerm's own artwork only. Screenshots of third-party software (the Omarchy desktop, other applications, wallpapers, fonts) are excluded; those belong to their owners.

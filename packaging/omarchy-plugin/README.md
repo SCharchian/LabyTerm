@@ -20,6 +20,13 @@ Resizing: the window snaps to whole cell sizes, so it never has dead space beyon
 
 Then open the launcher and search "LabyTerm". Remove with `omarchy plugin remove io.github.scharchian.labyterm`, then `rm -rf ~/.local/share/labyterm ~/.local/bin/labyterm` for the built game and the terminal command (your saves are kept).
 
+## Requirements
+
+- Omarchy with Hyprland (the plugin uses `hyprctl`, `jq` and `xdg-terminal-exec`, all part of a normal Omarchy install) and `pacman`.
+- To build the game on first launch: `git`, `base-devel`, `cmake`, `ninja`, `sdl3` and `shaderc`. The launcher checks for them and, if any are missing, asks before running `sudo pacman -S --needed` for just those.
+- Network access on the first launch (a `git clone` of the game from GitHub) and when rebuilding after an update.
+- `yay` or `paru` are optional and only used if an AUR package of the game exists.
+
 ## What it does on your machine (read this: plugins are unsandboxed)
 
 - While the drop-down is showing, the bar widget puts a transparent overlay over each screen so that a click outside the game hides it. The overlay leaves the bar and the game's window clickable, and it is gone as soon as the drop-down is hidden.
