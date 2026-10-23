@@ -23,7 +23,7 @@ makedepends=(
 )
 optdepends=('vulkan-driver: GPU screen filter (without one the slower CPU filter is used)')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('SKIP')  # replace with the real sum once the v1.0.0 tag exists: updpkgsums
+sha256sums=('545ca7e59ba7cfc23ca26cc2fb0d9fd65b50b639ff46e8e115a6b44e83a2a463')
 
 build() {
   cmake -S "LabyTerm-$pkgver" -B build -G Ninja \
