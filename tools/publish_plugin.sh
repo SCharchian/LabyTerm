@@ -40,7 +40,7 @@ fi
 
 git push "$REMOTE" "$split:refs/heads/main"
 tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
-git clone -q "$REMOTE" "$tmp/check"
+git clone -q --branch main "$REMOTE" "$tmp/check"
 [[ $(git -C "$tmp/check" rev-parse HEAD) == "$split" ]] || die "the clone's HEAD is not the pushed commit"
 omarchy plugin validate "$tmp/check" || die "the published plugin does not validate"
 echo "published and verified: $split"
