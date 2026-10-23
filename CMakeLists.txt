@@ -21,10 +21,11 @@ find_package(Threads REQUIRED)
 # otherwise it is fetched.
 find_package(nlohmann_json 3.11 QUIET CONFIG)
 if(NOT nlohmann_json_FOUND)
+  # The release tarball, checked against its SHA-256 (nlohmann's recommended FetchContent source): a moved tag cannot change it.
   FetchContent_Declare(nlohmann_json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.12.0
-    GIT_SHALLOW TRUE)
+    URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+    URL_HASH SHA256=42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
   FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
