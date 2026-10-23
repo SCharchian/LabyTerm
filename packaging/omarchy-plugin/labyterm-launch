@@ -106,7 +106,7 @@ echo "Installs to $APP"
 echo
 
 missing=()
-for pkg in git base-devel cmake ninja sdl3 shaderc; do
+for pkg in git base-devel cmake ninja sdl3 nlohmann-json shaderc; do
   pacman -Qq "$pkg" >/dev/null 2>&1 || missing+=("$pkg")
 done
 if ((${#missing[@]})); then
