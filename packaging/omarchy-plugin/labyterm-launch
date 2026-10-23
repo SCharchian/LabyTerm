@@ -4,8 +4,7 @@
 # rebuild it. A game from a package (the AUR) or from LABYTERM_BIN is never touched: the package manager updates it.
 #
 #   LABYTERM_BIN   use this binary instead of looking for one
-#   LABYTERM_REPO  git URL to build from (default below)
-#   LABYTERM_REF   branch or tag to build (default: the release tag matching this plugin's version, else main)
+#   LABYTERM_REPO  git URL to build from (default below); the pinned commit below must exist there
 #   LABYTERM_NO_AUR=1           skip the offer to install the AUR package (when one exists) and build from source
 #   LABYTERM_NO_UPDATE_CHECK=1  never offer to rebuild an older build
 set -euo pipefail
@@ -15,8 +14,10 @@ HERE=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
 PV=$(sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' "$HERE/manifest.json" 2>/dev/null | head -n 1 || true)
 
 REPO=${LABYTERM_REPO:-https://github.com/SCharchian/LabyTerm.git}
-REF=${LABYTERM_REF:-${PV:+v$PV}}
-REF=${REF:-main}
+# The game is built from ONE exact commit: the commit of this plugin release's tag (v$PV), never a branch or a tag, which
+# can move. tools/check_version.sh checks that PIN is the commit of that tag. The hash is repeated in the checkout below
+# on purpose (a fixed literal there is what a reviewer or scanner can verify); the two must agree.
+PIN=5beb2eedfd82c028922d766db9d10503f722f994
 HOME_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/labyterm
 SRC=$HOME_DIR/src      # git clone of the source (kept so it can be rebuilt)
 APP=$HOME_DIR/app      # the installed game: bin/labyterm, share/labyterm (data), icons
@@ -100,10 +101,7 @@ else
   echo "LabyTerm is built from source the first time (a few minutes)."
 fi
 
-# The release matching this plugin; if it does not exist (yet), say so and build the main branch.
-git ls-remote --exit-code "$REPO" "refs/tags/$REF" "refs/heads/$REF" >/dev/null 2>&1 \
-  || { echo "Note: '$REF' was not found in $REPO; building the main branch instead."; REF=main; }
-echo "Source: $REPO ($REF)  ->  $SRC"
+echo "Source: $REPO (commit ${PIN:0:10}, release v$PV)  ->  $SRC"
 echo "Installs to $APP"
 echo
 
@@ -118,28 +116,36 @@ if ((${#missing[@]})); then
   sudo pacman -S --needed "${missing[@]}" || fail "pacman failed"
 fi
 
-mkdir -p "$(dirname "$SRC")"
-if [[ -d $SRC/.git ]]; then
-  git -C "$SRC" fetch --depth 1 origin "$REF" && git -C "$SRC" checkout -q FETCH_HEAD || fail "git update"
-else
-  git clone --depth 1 --branch "$REF" "$REPO" "$SRC" || fail "git clone"
-fi
+# Configure, compile and install the checked-out source. Defined here and run only at the end of the chain below,
+# so that nothing is built unless the exact pinned commit was fetched and checked out.
+build_game() {
+  cd "$SRC" || fail "cd $SRC"
+  # The compiler's full output goes to a log; the terminal shows progress, and the log's tail if something fails.
+  LOG=$HOME_DIR/build.log
+  quiet() { "$@" >>"$LOG" 2>&1 || { echo; tail -n 40 "$LOG"; fail "$* (full log: $LOG)"; }; }
+  : >"$LOG"
+  echo "Configuring..."
+  quiet cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DLABYTERM_DEBUG_KEYS=OFF
+  if ! cmake --build build-release --target labyterm 2>&1 | tee -a "$LOG" |
+    { grep --line-buffered -o '^\[[0-9]*/[0-9]*\]' || true; } | while read -r step; do printf '\r  Compiling %s ' "$step"; done; then
+    echo; tail -n 40 "$LOG"; fail "compile (full log: $LOG)"
+  fi
+  echo
+  quiet cmake --install build-release --prefix "$APP"
+  [[ -x $BIN ]] || fail "no binary produced"
+  rm -f "$DECLINED"
+}
 
-cd "$SRC"
-# The compiler's full output goes to a log; the terminal shows progress, and the log's tail if something fails.
-LOG=$HOME_DIR/build.log
-quiet() { "$@" >>"$LOG" 2>&1 || { echo; tail -n 40 "$LOG"; fail "$* (full log: $LOG)"; }; }
-: >"$LOG"
-echo "Configuring..."
-quiet cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DLABYTERM_DEBUG_KEYS=OFF
-if ! cmake --build build-release --target labyterm 2>&1 | tee -a "$LOG" |
-  { grep --line-buffered -o '^\[[0-9]*/[0-9]*\]' || true; } | while read -r step; do printf '\r  Compiling %s ' "$step"; done; then
-  echo; tail -n 40 "$LOG"; fail "compile (full log: $LOG)"
-fi
-echo
-quiet cmake --install build-release --prefix "$APP"
-[[ -x $BIN ]] || fail "no binary produced"
-rm -f "$DECLINED"
+# Fetch exactly the pinned commit and check it out detached; refuse to build anything else.
+mkdir -p "$SRC"
+[[ -d $SRC/.git ]] || git init -q "$SRC" || fail "git init"
+git -C "$SRC" remote remove origin >/dev/null 2>&1 || true
+git -C "$SRC" remote add origin "$REPO" || fail "git remote"
+git -C "$SRC" fetch --depth 1 origin "$PIN" \
+  && git -C "$SRC" checkout -q --detach 5beb2eedfd82c028922d766db9d10503f722f994 \
+  && [[ $(git -C "$SRC" rev-parse HEAD) == "$PIN" ]] \
+  && build_game \
+  || fail "could not fetch and build exactly commit $PIN from $REPO"
 
 # A `labyterm` command for the terminal: a small wrapper, not a symlink, so that starting the game detaches it and the
 # prompt returns, while --version, --check-data and the like still print here. Rewritten on every build; a `labyterm` that
