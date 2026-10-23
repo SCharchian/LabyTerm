@@ -123,6 +123,8 @@ class WalkSession {
   Hero& debugHero() { return hero_; }
   // For tests: gets into the elevator if you are standing on its tile.
   void debugRideElevator();
+  // For tests: wins the fight on the spot (XP, loot and the chest as usual), like the DEBUG key W but in every build.
+  void debugWinFight() { if (combat_) { combat_->debugKill(); endCombat(); } }
   // For tests: how many tiles of this class the floor has (the player's own tile counts as what they stand on).
   int debugCountTiles(TileClass t) const;
   // Draws the whole main screen (view, minimap, HUD, log) into `grid`, which is kGridCols x kGridRows.

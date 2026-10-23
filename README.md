@@ -77,16 +77,17 @@ will keep it current.
 **From source:**
 
     git clone https://github.com/SCharchian/LabyTerm.git && cd LabyTerm
-    tools/build.sh --target labyterm
+    cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+    cmake --build build --target labyterm
     build/labyterm
 
 To install it as a regular application for your user (a `labyterm` command plus a **LabyTerm** entry in the launcher; make sure `~/.local/bin` is on your `PATH`):
 
-    cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DLABYTERM_DEBUG_KEYS=OFF
+    cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release
     cmake --build build-release
     cmake --install build-release --prefix ~/.local
 
-`tools/build.sh` without `--target` also builds the tests, the balance bots and the inspection tools. More in [docs/DEVELOPING.md](docs/DEVELOPING.md).
+For development, `tools/build.sh` builds everything (the game, the tests, the balance bots and the inspection tools) with the DEBUG hotkeys compiled in. More in [docs/DEVELOPING.md](docs/DEVELOPING.md).
 
 **Update**: run `omarchy plugin update io.github.scharchian.labyterm`, then start LabyTerm: it offers to rebuild the game if a newer
 version is out (answer "not now" and it asks again for the next version).

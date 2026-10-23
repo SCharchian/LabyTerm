@@ -84,9 +84,15 @@ target_include_directories(labyrender SYSTEM PUBLIC third_party/stb)  # SYSTEM: 
 target_link_libraries(labyrender PUBLIC labycore Threads::Threads)
 target_compile_options(labyrender PRIVATE -Wall -Wextra)
 
-# DEBUG hotkeys (monster spawning toggle, ...): on for development builds, listed with the other key hints in the UI.
-# A release/ship build must configure with -DLABYTERM_DEBUG_KEYS=OFF, which removes them from the binary.
-option(LABYTERM_DEBUG_KEYS "Compile the DEBUG hotkeys in" ON)
+# DEBUG hotkeys (monster spawning toggle, ...), listed with the other key hints in the UI. They are for development: off by
+# default, so a plain `cmake` build, a package and the plugin's build have none; on by default only for a Debug build type.
+# tools/build.sh (a Release build for development) turns them on explicitly. Every hotkey must sit behind this switch.
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(LABYTERM_DEBUG_KEYS_DEFAULT ON)
+else()
+  set(LABYTERM_DEBUG_KEYS_DEFAULT OFF)
+endif()
+option(LABYTERM_DEBUG_KEYS "Compile the DEBUG hotkeys in (development builds)" ${LABYTERM_DEBUG_KEYS_DEFAULT})
 if(LABYTERM_DEBUG_KEYS)
   target_compile_definitions(labyrender PUBLIC LABYTERM_DEBUG_KEYS=1)
 endif()

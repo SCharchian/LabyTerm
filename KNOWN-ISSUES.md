@@ -12,7 +12,7 @@ LabyTerm is developed on Omarchy (Arch Linux, Hyprland, Wayland). It is built on
 - Needs a C++20 compiler, CMake 3.24 or newer, Ninja (or Make), and **SDL3**. SDL3 is new: older releases of Debian, Ubuntu and Fedora may not package it. Build SDL3 from source in that case.
 - nlohmann/json is taken from the system if installed (the `nlohmann-json` package), otherwise downloaded at configure time (network needed).
 - `glslc` (the `shaderc` package) is optional. Without it, or without Vulkan, the screen filter falls back to the CPU version, which is much slower at large window sizes (about 110 ms per frame at 1440p fullscreen, against about 2.6 ms on the GPU). Use filter level 0 to turn it off if it feels slow.
-- Release builds should use `-DLABYTERM_DEBUG_KEYS=OFF`. The default build includes debug hotkeys.
+- The DEBUG hotkeys are off in a normal build. They are compiled in only for a Debug build type, or with `-DLABYTERM_DEBUG_KEYS=ON` (what `tools/build.sh` passes).
 - The data folder is found next to the binary (`../share/labyterm`) or in the source tree; `LABYTERM_DATA` overrides.
 
 ## Omarchy-specific parts

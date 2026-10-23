@@ -7,5 +7,6 @@ for d in "$HOME"/.local/share/mise/installs/cmake/latest/*/bin "$HOME"/.local/sh
   [[ -d "$d" ]] && PATH="$d:$PATH"
 done
 export PATH
-[[ -f build/CMakeCache.txt ]] || cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+# A development build: the DEBUG hotkeys are compiled in (they are off by default, for players and packages).
+[[ -f build/CMakeCache.txt ]] || cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DLABYTERM_DEBUG_KEYS=ON -G Ninja
 exec cmake --build build "$@"

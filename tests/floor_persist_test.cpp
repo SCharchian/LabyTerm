@@ -234,7 +234,7 @@ static int bossKilled() {
   CHECK(a.debugGoNextTo(TileClass::BOSS));
   a.handle(Key::Up);
   CHECK(a.inCombat());
-  for (int i = 0; i < 300 && a.inCombat() && !a.dead(); ++i) a.handle(Key::Other, U'w');  // (debug key: wins at once)
+  a.debugWinFight();
   CHECK(!a.dead());
   for (int i = 0; i < 4 && a.atChest(); ++i) a.handle(Key::Enter);
   CHECK(a.atPortal());

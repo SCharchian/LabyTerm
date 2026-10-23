@@ -6,8 +6,8 @@ Requires a C++20 compiler, SDL3 (`sdl3` package), CMake >= 3.24 and Ninja. nlohm
 (`nlohmann-json` package), else fetched at configure time. `glslc` (the `shaderc` package) is optional, see [the GPU CRT filter](CONFIGURATION.md#gpu-crt-filter). The game reads `data/` from the source tree it was built in (`LABYTERM_DATA` overrides),
 including the original's town, title and boss lair pictures (`data/art`); nothing is read from the original Labyrinth at run time.
 
-    tools/build.sh                                   # configure (Release) and build into build/
-    cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DLABYTERM_DEBUG_KEYS=OFF   # a ship build: no debug hotkeys
+    tools/build.sh                                   # configure (Release, DEBUG hotkeys ON) and build into build/
+    cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release   # what a player or a package builds: no debug hotkeys
     ctest --test-dir build                           # tests
 
 Other entry points:
