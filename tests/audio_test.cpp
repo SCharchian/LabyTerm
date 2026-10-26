@@ -228,6 +228,18 @@ static void testSession() {
   b.takeAudio();
   b.debugFight(true);
   CHECK(lastMusic(b.takeAudio(), Music::None) == Music::BossCombat, "boss music");
+
+  // the elevator: its music starts, the crank clicks and keeps the music running
+  WalkSession e(5);
+  e.takeAudio();
+  e.debugRideElevator();
+  e.tick(1000);
+  AudioEvents er = e.takeAudio();
+  CHECK(lastMusic(er, Music::None) == Music::Elevator, "elevator music");
+  e.handle(Key::Down);
+  e.tick(1100);
+  er = e.takeAudio();
+  CHECK(has(er, Sfx::CrankClick), "crank click");
 }
 
 int main() {

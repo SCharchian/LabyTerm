@@ -855,12 +855,13 @@ void WalkSession::elevatorTick(bool up) {
   }
 }
 
-// The crank: a click, and the music plays while you keep at it (the original's MusicStopTimer pauses it 0.4 s after the last turn).
+// The crank: a click, and the music plays while the shaft slides past and you keep at it (the original paused it 0.4 s after the last turn;
+// here a ride is one key press and the picture moves for 2 s, so the music runs that long).
 void WalkSession::elevatorCranked() {
   if (now_ >= elevatorAnimUntil_) elevatorAnimLast_ = now_;  // (the animation was idle: restart its clock)
   elevatorAnimUntil_ = now_ + 2000;
   sfx(Sfx::CrankClick);
-  elevatorRunUntil_ = now_ + 400;
+  elevatorRunUntil_ = elevatorAnimUntil_;
   audio_.push_back({AudioEvent::Kind::MusicRate, Sfx::Footstep, Music::None, 100, 0});
   if (!elevatorMusicRuns_) audio_.push_back({AudioEvent::Kind::MusicRun, Sfx::Footstep, Music::None, -1, 0});
   elevatorMusicRuns_ = true;
@@ -1478,7 +1479,7 @@ bool WalkSession::tick(std::uint64_t nowMs) {
   syncMusic();
   if (mode_ != Mode::Playing) return true;  // the storm moves
   bool pending = false;
-  if (elevatorMusicRuns_) {  // 0.4 s after the last crank the music pauses
+  if (elevatorMusicRuns_) {  // when the shaft has stopped sliding the music pauses
     if (nowMs >= elevatorRunUntil_) {
       audio_.push_back({AudioEvent::Kind::MusicHold, Sfx::Footstep, Music::None, -1, 0});
       elevatorMusicRuns_ = false;
