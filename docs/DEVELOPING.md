@@ -13,7 +13,7 @@ including the original's town, title and boss lair pictures (`data/art`); nothin
 Other entry points:
 `labyterm --map 7` (dungeon viewer), `--layouts 4` (layout mocks), `--fonts` (font and glyph lab), `--tuning` (list all knobs),
 `--check-data`, `--smoke`. Headless pictures need no window: `build/walk_dump <seed> <moves> out.png` (see `CLAUDE.md`).
-Without a display or with broken data the game prints a one-line error and exits with status 1.
+Without a display the game plays in the terminal (`-t`); `-w` without a display, or broken data, prints a one-line error and exits with status 1.
 
 To install it for your user (command on `PATH` plus a start-menu entry; the binary finds `../share/labyterm` by itself):
 
