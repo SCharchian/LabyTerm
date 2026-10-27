@@ -54,9 +54,16 @@ builds the view out of octant mosaic cells instead:
 
 ![The dungeon in the Pixel Art style](docs/images/pixel-art.png)
 
+## Play in your terminal
+
+LabyTerm also plays inside a terminal, with no window at all. Run `labyterm -t` in a terminal that has truecolor and draws Unicode 16 block characters
+(Ghostty and foot do; others get a one-time check and a fallback), at least 100 x 30 cells; a bigger window gets more room. `labyterm -w` plays
+in the window. Without either, a window opens when there is a display and the terminal is used when there is not (so it works over ssh). Details and
+fixes for tmux are in [KNOWN-ISSUES.md](KNOWN-ISSUES.md); `labyterm --help` lists the options.
+
 ## Requirements
 
-- Linux with a graphical session (developed and tested on [Omarchy](https://omarchy.org): Arch, Hyprland, Wayland).
+- Linux with a graphical session (developed and tested on [Omarchy](https://omarchy.org): Arch, Hyprland, Wayland), or a truecolor terminal for `labyterm -t`.
 - SDL3 (the `sdl3` package).
 - A GPU with Vulkan is optional: it makes the screen filter cheap. Without one the game falls back to the CPU, which works but
   is slower at large window sizes.

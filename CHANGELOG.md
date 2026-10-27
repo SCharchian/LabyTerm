@@ -3,6 +3,16 @@
 All notable changes to LabyTerm. Versions follow [Semantic Versioning](https://semver.org/):
 saves and settings stay compatible within a major version.
 
+## [1.1.0] - unreleased
+
+Play in your terminal
+- `labyterm -t` (or `--terminal`) plays the whole game inside a truecolor terminal, drawn with Unicode octant block characters, themed like the window. `labyterm -w` (or `--window`) plays in the window. With neither, a window opens when there is a display, and the terminal is used when there is none (over ssh). `labyterm --help` lists the options.
+- The terminal version adapts to the size of its window (at least 100 x 30 cells): the town, the shops, the scroll and orb rewards, the elevator and the fights all have their own layouts for it. The start screen says how to play the other way until you have tried both.
+- The HP bar is red and the MP bar blue in the terminal, damage shows as a pale lost slice of the bar, and the health and mana orbs have their own colors.
+
+Also
+- Debug hotkeys are off in release builds, the elevator ride keeps its music while the shaft slides, and the build fetches nlohmann/json as a checked tarball.
+
 ## [1.0.0] - 2026-10-21
 
 First release. LabyTerm is a first-person dungeon crawler drawn as colored text cells, themed from your Omarchy theme: a spiritual port of the Playdate game *Labyrinth* with its own dungeon generator (bigger rooms and a longer view), color and sound.

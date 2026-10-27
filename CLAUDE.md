@@ -18,6 +18,11 @@ The Playdate original (Lua + art) is not part of this repository, and nothing he
 - `packaging/`: desktop file and icons, the Omarchy plugin (`omarchy-plugin/`), the Arch PKGBUILDs (`arch/`: `PKGBUILD` is the recipe for Omarchy's package repository `omacom/omarchy-pkgs` and the AUR, `omarchy-package.json` becomes its `.omarchy/package.json`).
 - Tests are `tests/*.cpp` run by ctest, `tests/level_test.cpp` checks the level generator's properties. `tests/*_dump.cpp` are headless inspection tools.
 
+## Window and terminal
+- One program, two frontends: `labyterm -w` (SDL window, default when there is a display) and `labyterm -t` (the terminal, `TerminalBackend`). `render/BackendFactory.cpp` picks one from `backendKind()`; the rest of the game only sees `Backend`/`CellGrid`.
+- The terminal draws its own screens: `src/ui/TermScreen.cpp` + `TermLayout.hpp` (a terminal's view is smaller and its text one row tall, the window's two). When you change a window screen, check the terminal one (`WALK_GRID=100x30 build/walk_dump ...`, `tools/term_tour.sh`). `tools/test_term_startup.py` plays the startup in a pretend terminal.
+- The start screen's "play the other way" line is remembered in `modes.json` (state folder); `LABYTERM_NO_TIPS=1` hides it.
+
 ## Non-obvious decisions and pitfalls
 - The RNG (`src/core/Rng.hpp`) is a seedable `std::mt19937_64`; random-number sequences do not matter and are not compatible with the original, so new features may draw from the RNG wherever convenient.
 - Balance: `tools/balance_report.py --seeds 5000` writes `build/balance/REPORT.md`; its section 0 is the pass/fail target check.

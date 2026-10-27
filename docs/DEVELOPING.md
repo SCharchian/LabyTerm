@@ -24,6 +24,9 @@ To install it for your user (command on `PATH` plus a start-menu entry; the bina
     src/render/    CellGrid (the game's framebuffer), Backend interface and SDL3 window backend, glyph atlas,
                    CPU frame renderer + CRT filter, pixel art drawn in text cells
     third_party/   vendored stb headers (MIT / public domain)
+    src/render/    TerminalBackend (the terminal frontend: raw input, resize, changed-cells output), TermFrame (cells to octant glyphs),
+                   TermCaps (what the terminal can do), BackendFactory (-t / -w choose between it and the window)
+    src/ui/        MainScreen (the window's screens) and TermScreen + TermLayout (the same screens laid out for a terminal)
     src/audio/     Cues (what the game reports), Mixer, AudioPlayer (SDL3 audio device)
     src/platform/  Omarchy theme loader
     src/core/      JSON data loading (data/ dir, override with $LABYTERM_DATA), generated Enums.hpp, tuning

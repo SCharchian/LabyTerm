@@ -44,3 +44,10 @@ LabyTerm is developed on Omarchy (Arch Linux, Hyprland, Wayland). It is built on
 
 - No package exists for Debian, Fedora, Nix, Flatpak or AppImage. A Flatpak needs the SDL3 runtime and the state/config paths mapped.
 - The install target puts the binary, data, desktop entry, icons and licenses in a prefix (`cmake --install build --prefix /usr`); a distro package should use that.
+
+## Terminal mode (`labyterm -t`)
+
+- Needs truecolor and, for the sharp pictures, Unicode 16 octant characters (Ghostty and foot have them; elsewhere the game asks once and can fall back to quadrant characters). Inside tmux, truecolor needs `set -as terminal-features ',*:RGB'` in `~/.tmux.conf`; the game says so if it cannot tell.
+- The window must be at least 100 x 30 cells; the game says by how much it is short.
+- There is no CRT filter, and no key-release events, so a held key repeats a little differently than in the window.
+- Every screen exists twice (`MainScreen.cpp` for the window, `TermScreen.cpp` for the terminal): a change to one usually needs the other.
