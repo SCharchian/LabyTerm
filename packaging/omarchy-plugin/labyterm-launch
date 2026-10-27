@@ -17,7 +17,7 @@ REPO=${LABYTERM_REPO:-https://github.com/SCharchian/LabyTerm.git}
 # The game is built from ONE exact commit: the commit of this plugin release's tag (v$PV), never a branch or a tag, which
 # can move. tools/check_version.sh checks that PIN is the commit of that tag. The hash is repeated in the checkout below
 # on purpose (a fixed literal there is what a reviewer or scanner can verify); the two must agree.
-PIN=5beb2eedfd82c028922d766db9d10503f722f994
+PIN=ce0f3f1cbc391bbbdc0f79809bec068d7cf0ef48
 HOME_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/labyterm
 SRC=$HOME_DIR/src      # git clone of the source (kept so it can be rebuilt)
 APP=$HOME_DIR/app      # the installed game: bin/labyterm, share/labyterm (data), icons
@@ -142,7 +142,7 @@ mkdir -p "$SRC"
 git -C "$SRC" remote remove origin >/dev/null 2>&1 || true
 git -C "$SRC" remote add origin "$REPO" || fail "git remote"
 git -C "$SRC" fetch --depth 1 origin "$PIN" \
-  && git -C "$SRC" checkout -q --detach 5beb2eedfd82c028922d766db9d10503f722f994 \
+  && git -C "$SRC" checkout -q --detach ce0f3f1cbc391bbbdc0f79809bec068d7cf0ef48 \
   && [[ $(git -C "$SRC" rev-parse HEAD) == "$PIN" ]] \
   && build_game \
   || fail "could not fetch and build exactly commit $PIN from $REPO"
