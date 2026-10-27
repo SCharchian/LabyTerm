@@ -254,7 +254,7 @@ void WalkSession::newDungeon(std::uint64_t seed) {
   rebuildFloor_ = false;
   mode_ = Mode::Playing;
   summary_.reset();
-  shop_.clear();
+  shop_ = restockBlacksmith(rng_, hero_.level);  // the opening stock; after this only a beaten boss restocks
   spot_ = TownSpot::Sign;
   townSel_ = 0;
   sellArmed_ = false;
@@ -968,7 +968,6 @@ void WalkSession::townKey(Key key, char32_t ch) {
         break;
       case 1:
         spot_ = TownSpot::Blacksmith;
-        if (shop_.empty()) shop_ = restockBlacksmith(rng_, hero_.level);
         say("You follow the sounds of ringing steel.");
         break;
       case 2:
@@ -1025,7 +1024,7 @@ void WalkSession::townKey(Key key, char32_t ch) {
         return;
       }
       move(static_cast<int>(shop_.size()));
-      if (ok) {
+      if (ok && !shop_.empty()) {
         shopDetail_ = true;
         sfx(Sfx::CrankClick);
       }
@@ -1079,7 +1078,8 @@ bool WalkSession::buyItem() {
     say(worn ? worn->displayName + " replaced with " + item.displayName : item.displayName + " bought for " + std::to_string(price) + " gold.");
     hero_.equip(item);
   }
-  shop_[static_cast<size_t>(townSel_)] = newStockItem(rng_, hero_.level, scroll);  // the shop restocks the slot
+  shop_.erase(shop_.begin() + townSel_);  // the slot is gone until the next boss restocks
+  townSel_ = std::clamp(townSel_, 0, std::max(0, static_cast<int>(shop_.size()) - 1));
   return true;
 }
 
