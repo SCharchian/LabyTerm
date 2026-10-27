@@ -74,7 +74,7 @@ void Mixer::play(std::shared_ptr<const Clip> clip, float gain, int delayFrames) 
   sfx_.push_back(std::move(v));
 }
 
-void Mixer::setMusic(int id, std::shared_ptr<const Clip> clip, float gain, bool keepPosition) {
+void Mixer::setMusic(int id, std::shared_ptr<const Clip> clip, float gain, bool keepPosition, bool effect) {
   if (id == musicId_ && (music_.clip || !clip)) return;
   if (music_.clip) {  // the old track fades out
     if (musicKeep_) saved_[musicId_] = music_.pos;
@@ -90,6 +90,7 @@ void Mixer::setMusic(int id, std::shared_ptr<const Clip> clip, float gain, bool 
   music_.clip = std::move(clip);
   music_.gain = gain;
   music_.loop = true;
+  music_.effect = effect;
   music_.env = 0;
   music_.envTarget = 1;
   music_.envStep = 1 / (kFadeSeconds * outRate_);
@@ -99,7 +100,7 @@ void Mixer::setMusic(int id, std::shared_ptr<const Clip> clip, float gain, bool 
   }
 }
 
-bool Mixer::idle() const { return sfx_.empty() && !fading_.clip && !(music_.clip && musicRunning_ && musicVol_ * master_ > 0); }
+bool Mixer::idle() const { return sfx_.empty() && !fading_.clip && !(music_.clip && musicRunning_ && (music_.effect ? sfxVol_ : musicVol_) * master_ > 0); }
 
 void Mixer::render(Voice& v, float vol, float rateMul, float* out, int frames) const {
   const Clip& c = *v.clip;
@@ -144,8 +145,8 @@ void Mixer::render(Voice& v, float vol, float rateMul, float* out, int frames) c
 
 void Mixer::mix(float* out, int frames) {
   std::fill(out, out + 2 * frames, 0.0f);
-  if (fading_.clip) render(fading_, musicVol_ * master_, 1, out, frames);
-  if (music_.clip && musicRunning_) render(music_, musicVol_ * master_, musicRate_, out, frames);
+  if (fading_.clip) render(fading_, (fading_.effect ? sfxVol_ : musicVol_) * master_, 1, out, frames);
+  if (music_.clip && musicRunning_) render(music_, (music_.effect ? sfxVol_ : musicVol_) * master_, musicRate_, out, frames);
   for (Voice& v : sfx_) render(v, sfxVol_ * master_, 1, out, frames);
   sfx_.erase(std::remove_if(sfx_.begin(), sfx_.end(), [](const Voice& v) { return v.dead(); }), sfx_.end());
   for (int i = 0; i < 2 * frames; ++i) out[i] = limit(out[i]);

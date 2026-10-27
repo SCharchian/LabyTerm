@@ -24,6 +24,7 @@ struct MusicDef {
   std::string file;
   float volume = 1;
   bool keepPosition = false;
+  bool effect = false;  // follows the sound-effects volume (the storm)
 };
 
 }  // namespace
@@ -146,6 +147,7 @@ std::unique_ptr<AudioPlayer> AudioPlayer::create(const std::string& dataDir, std
       d.file = v.at("file").get<std::string>();
       d.volume = v.value("volume", 1.0f);
       d.keepPosition = v.value("keepPosition", false);
+      d.effect = v.value("effect", false);
       for (size_t i = 1; i < kMusicNames.size(); ++i)
         if (kMusicNames[i] == k) impl->music[static_cast<Music>(i)] = d;
     }
@@ -179,7 +181,7 @@ void AudioPlayer::handle(const AudioEvents& events) {
           impl_->mixer.setMusic(static_cast<int>(e.music), nullptr, 1, false);
         } else {
           impl_->mixer.musicRun(true);
-          impl_->mixer.setMusic(static_cast<int>(e.music), impl_->clip(it->second.file), it->second.volume, it->second.keepPosition);
+          impl_->mixer.setMusic(static_cast<int>(e.music), impl_->clip(it->second.file), it->second.volume, it->second.keepPosition, it->second.effect);
         }
         break;
       }

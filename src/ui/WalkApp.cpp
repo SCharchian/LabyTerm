@@ -96,7 +96,7 @@ int runWalkView(std::uint64_t seed) {
         if (now < lastMoveMs + static_cast<std::uint64_t>(ms)) continue;
       }
       lastMoveMs = now;
-      if (text == 'a' && !session.inCombat()) {  // the audio key (in a fight A is Attack): Full Audio -> Effects Only -> Full Mute (the Options switches follow)
+      if (text == 'a' && !session.inCombat()) {  // the audio key (in a fight A is Attack): Full Audio -> Effects Only -> Full Mute (the Options switches follow; the start screen's storm is an effect, so it plays in Effects Only)
         cycleSoundMode(settings());
         settings().save();
         dirty = true;

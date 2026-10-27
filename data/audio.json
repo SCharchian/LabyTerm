@@ -374,6 +374,7 @@
  "music": {
   "Splash": {
    "file": "SplashScreen_RAIN",
+   "effect": true,
    "volume": 1.0
   },
   "CharCreation": {
