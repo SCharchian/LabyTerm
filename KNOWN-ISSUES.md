@@ -10,9 +10,9 @@ LabyTerm is developed on Omarchy (Arch Linux, Hyprland, Wayland). It is built on
 ## Build
 
 - Needs a C++20 compiler, CMake 3.24 or newer, Ninja (or Make), and **SDL3**. SDL3 is new: older releases of Debian, Ubuntu and Fedora may not package it. Build SDL3 from source in that case.
-- nlohmann/json is taken from the system if installed (the `nlohmann-json` package), otherwise downloaded at configure time (network needed).
+- nlohmann/json is taken from the system if installed (the `nlohmann-json` package), otherwise downloaded at configure time (network needed): the v3.12.0 release tarball, checked against a SHA-256 in `CMakeLists.txt`.
 - `glslc` (the `shaderc` package) is optional. Without it, or without Vulkan, the screen filter falls back to the CPU version, which is much slower at large window sizes (about 110 ms per frame at 1440p fullscreen, against about 2.6 ms on the GPU). Use filter level 0 to turn it off if it feels slow.
-- Release builds should use `-DLABYTERM_DEBUG_KEYS=OFF`. The default build includes debug hotkeys.
+- The DEBUG hotkeys are off in a normal build. They are compiled in only for a Debug build type, or with `-DLABYTERM_DEBUG_KEYS=ON` (what `tools/build.sh` passes).
 - The data folder is found next to the binary (`../share/labyterm`) or in the source tree; `LABYTERM_DATA` overrides.
 
 ## Omarchy-specific parts
@@ -44,3 +44,10 @@ LabyTerm is developed on Omarchy (Arch Linux, Hyprland, Wayland). It is built on
 
 - No package exists for Debian, Fedora, Nix, Flatpak or AppImage. A Flatpak needs the SDL3 runtime and the state/config paths mapped.
 - The install target puts the binary, data, desktop entry, icons and licenses in a prefix (`cmake --install build --prefix /usr`); a distro package should use that.
+
+## Terminal mode (`labyterm -t`)
+
+- Needs truecolor and, for the sharp pictures, Unicode 16 octant characters (Ghostty and foot have them; elsewhere the game asks once and can fall back to quadrant characters). Inside tmux, truecolor needs `set -as terminal-features ',*:RGB'` in `~/.tmux.conf`; the game says so if it cannot tell.
+- The window must be at least 100 x 30 cells; the game says by how much it is short.
+- There is no CRT filter, and no key-release events, so a held key repeats a little differently than in the window.
+- Every screen exists twice (`MainScreen.cpp` for the window, `TermScreen.cpp` for the terminal): a change to one usually needs the other.

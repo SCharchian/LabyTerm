@@ -8,7 +8,7 @@ The Playdate original (Lua + art) is not part of this repository, and nothing he
 - `tools/build.sh [--target labyterm|walk_dump|...]` configures (Release) and builds into `build/`. Tests: `ctest --test-dir build`.
 - Headless screenshot of any screen, no game needed: `build/walk_dump <seed> <moves> out.png [cellH] [crt]`. The dungeon is drawn in the default Text maze style; `WALK_MAZE=pixel` gives the Pixel Art style (octant mosaic). Moves: `U D L R` step/turn, `E` Enter, `T`/`B` jump next to the level chest / boss, `F` start a fight, `V` ride the elevator, `A` turn the glide on, `W` settle the fight camera, `H` the start screen, lowercase = hotkeys. E.g. `TUE` = open the level chest. `WALK_LABEL="seed 7"` replaces the corner text. For screenshots with the real (non-debug) key hints, use a `-DLABYTERM_DEBUG_KEYS=OFF` build. The README pictures in `docs/images/` are hand-taken screenshots, not generated.
 - Art: `tools/art.sh [set]` renders `build/art/<set>.png` (`watch` re-renders on save); `build/view_dump` renders one view (`SS=2 VIEW=95,6,0.6 CELL=60` matches the game's camera; the defaults hide one-pixel-row differences).
-- Release builds use `-DLABYTERM_DEBUG_KEYS=OFF`; every DEBUG hotkey must sit behind that switch (`tools/test_release_compile.sh` checks it). In-game debug keys: `W` in a fight wins instantly, `O`/`P` while walking drops a health/mana orb chest, `G` toggles encounters, `H` rests, `L` levels up (adds the XP it needs).
+- `LABYTERM_DEBUG_KEYS` is OFF by default (players, packages, the plugin) and ON for a Debug build type or via `tools/build.sh`; every DEBUG hotkey must sit behind that switch (`tools/test_release_compile.sh` checks it). In-game debug keys: `W` in a fight wins instantly, `O`/`P` while walking drops a health/mana orb chest, `G` toggles encounters, `H` rests, `L` levels up (adds the XP it needs).
 - Version: `project(LabyTerm VERSION ...)` in `CMakeLists.txt` is the single source; `tools/check_version.sh` checks that the Omarchy manifest, the PKGBUILD and the top `CHANGELOG.md` entry agree.
 
 ## Layout
@@ -17,6 +17,11 @@ The Playdate original (Lua + art) is not part of this repository, and nothing he
 - `data/gameplay.json` is the single source of truth for tuning (JSON with required `//` comments); `tools/gen_tuning.py` generates `src/core/TuningParams.hpp` from it. Users override via `~/.config/labyterm/tuning.json` (live reload). Other data (`monsters.json`, `equipment.json`, `art/`, `audio/`) was converted from the original game's files once; the converters are not part of this repo.
 - `packaging/`: desktop file and icons, the Omarchy plugin (`omarchy-plugin/`), the Arch PKGBUILDs (`arch/`: `PKGBUILD` is the recipe for Omarchy's package repository `omacom/omarchy-pkgs` and the AUR, `omarchy-package.json` becomes its `.omarchy/package.json`).
 - Tests are `tests/*.cpp` run by ctest, `tests/level_test.cpp` checks the level generator's properties. `tests/*_dump.cpp` are headless inspection tools.
+
+## Window and terminal
+- One program, two frontends: `labyterm -w` (SDL window, default when there is a display) and `labyterm -t` (the terminal, `TerminalBackend`). `render/BackendFactory.cpp` picks one from `backendKind()`; the rest of the game only sees `Backend`/`CellGrid`.
+- The terminal draws its own screens: `src/ui/TermScreen.cpp` + `TermLayout.hpp` (a terminal's view is smaller and its text one row tall, the window's two). When you change a window screen, check the terminal one (`WALK_GRID=100x30 build/walk_dump ...`, `tools/term_tour.sh`). `tools/test_term_startup.py` plays the startup in a pretend terminal.
+- The start screen's "play the other way" line is remembered in `modes.json` (state folder); `LABYTERM_NO_TIPS=1` hides it.
 
 ## Non-obvious decisions and pitfalls
 - The RNG (`src/core/Rng.hpp`) is a seedable `std::mt19937_64`; random-number sequences do not matter and are not compatible with the original, so new features may draw from the RNG wherever convenient.

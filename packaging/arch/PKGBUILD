@@ -3,7 +3,7 @@
 # One recipe for both homes: the Omarchy package repository (omacom/omarchy-pkgs, with omarchy-package.json
 # beside it as .omarchy/package.json) and, once AUR registration reopens, the AUR.
 pkgname=labyterm
-pkgver=1.0.0
+pkgver=1.1.0
 pkgrel=1
 pkgdesc='First-person dungeon crawler drawn as colored text cells, themed from your Omarchy theme'
 arch=('x86_64')

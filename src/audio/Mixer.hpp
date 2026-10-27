@@ -29,7 +29,8 @@ class Mixer {
 
   void play(std::shared_ptr<const Clip> clip, float gain, int delayFrames = 0);
   // Switches to this track (a different `id` than the current one; the same id is left alone). null = silence.
-  void setMusic(int id, std::shared_ptr<const Clip> clip, float gain, bool keepPosition);
+  void setMusic(int id, std::shared_ptr<const Clip> clip, float gain, bool keepPosition, bool effect = false);
+  // `effect`: a looping ambience (the storm) that follows the sound-effects volume, not the music volume.
   void musicRun(bool run) { musicRunning_ = run; }  // pause / resume without losing the place
   void setMusicRate(float r) { musicRate_ = r; }
   void setVolumes(float master, float music, float sfx) { master_ = master; musicVol_ = music; sfxVol_ = sfx; }
@@ -47,6 +48,7 @@ class Mixer {
     float env = 1, envTarget = 1, envStep = 0;  // fade, per output frame
     int delay = 0;        // output frames until it starts
     bool loop = false;
+    bool effect = false;  // mixed at the sound-effects volume
     bool dead() const { return !clip; }
   };
   void render(Voice& v, float vol, float rateMul, float* out, int frames) const;

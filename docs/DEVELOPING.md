@@ -6,14 +6,14 @@ Requires a C++20 compiler, SDL3 (`sdl3` package), CMake >= 3.24 and Ninja. nlohm
 (`nlohmann-json` package), else fetched at configure time. `glslc` (the `shaderc` package) is optional, see [the GPU CRT filter](CONFIGURATION.md#gpu-crt-filter). The game reads `data/` from the source tree it was built in (`LABYTERM_DATA` overrides),
 including the original's town, title and boss lair pictures (`data/art`); nothing is read from the original Labyrinth at run time.
 
-    tools/build.sh                                   # configure (Release) and build into build/
-    cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DLABYTERM_DEBUG_KEYS=OFF   # a ship build: no debug hotkeys
+    tools/build.sh                                   # configure (Release, DEBUG hotkeys ON) and build into build/
+    cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release   # what a player or a package builds: no debug hotkeys
     ctest --test-dir build                           # tests
 
 Other entry points:
 `labyterm --map 7` (dungeon viewer), `--layouts 4` (layout mocks), `--fonts` (font and glyph lab), `--tuning` (list all knobs),
 `--check-data`, `--smoke`. Headless pictures need no window: `build/walk_dump <seed> <moves> out.png` (see `CLAUDE.md`).
-Without a display or with broken data the game prints a one-line error and exits with status 1.
+Without a display the game plays in the terminal (`-t`); `-w` without a display, or broken data, prints a one-line error and exits with status 1.
 
 To install it for your user (command on `PATH` plus a start-menu entry; the binary finds `../share/labyterm` by itself):
 
@@ -24,6 +24,9 @@ To install it for your user (command on `PATH` plus a start-menu entry; the bina
     src/render/    CellGrid (the game's framebuffer), Backend interface and SDL3 window backend, glyph atlas,
                    CPU frame renderer + CRT filter, pixel art drawn in text cells
     third_party/   vendored stb headers (MIT / public domain)
+    src/render/    TerminalBackend (the terminal frontend: raw input, resize, changed-cells output), TermFrame (cells to octant glyphs),
+                   TermCaps (what the terminal can do), BackendFactory (-t / -w choose between it and the window)
+    src/ui/        MainScreen (the window's screens) and TermScreen + TermLayout (the same screens laid out for a terminal)
     src/audio/     Cues (what the game reports), Mixer, AudioPlayer (SDL3 audio device)
     src/platform/  Omarchy theme loader
     src/core/      JSON data loading (data/ dir, override with $LABYTERM_DATA), generated Enums.hpp, tuning

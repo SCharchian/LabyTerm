@@ -374,14 +374,17 @@
  "music": {
   "Splash": {
    "file": "SplashScreen_RAIN",
+   "effect": true,
    "volume": 1.0
   },
   "CharCreation": {
    "file": "CharCreation_Storm",
+   "effect": true,
    "volume": 0.6
   },
   "Elevator": {
    "file": "ELEVATOR_Music",
+   "effect": true,
    "volume": 0.6
   },
   "Town": {

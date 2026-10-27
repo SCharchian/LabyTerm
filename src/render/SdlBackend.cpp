@@ -426,6 +426,6 @@ class SdlBackend final : public Backend {
 
 }  // namespace
 
-std::unique_ptr<Backend> makeBackend(int w, int h, const char* title) { return std::make_unique<SdlBackend>(w, h, title); }
+std::unique_ptr<Backend> makeSdlBackend(int w, int h, const char* title) { return std::make_unique<SdlBackend>(w, h, title); }
 
 }  // namespace laby

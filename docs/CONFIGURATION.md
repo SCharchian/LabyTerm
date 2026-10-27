@@ -50,7 +50,7 @@ All optional; the game runs without any of them, and nothing installs them. The 
 | `LABYTERM_DEBUG=1` | Print window sizing and frame timings to stderr. |
 | `LABYTERM_SKIP_TITLE=1` | Start straight in a dungeon (for measuring). |
 
-`LABYTERM_DEBUG_KEYS` is a CMake option, not an environment variable: release builds use `-DLABYTERM_DEBUG_KEYS=OFF`.
+`LABYTERM_DEBUG_KEYS` is a CMake option, not an environment variable. It is off by default and on by default for a Debug build type; `tools/build.sh` turns it on for development.
 
 ## GPU CRT filter
 

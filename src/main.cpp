@@ -9,6 +9,9 @@
 #include <random>
 #include <stdexcept>
 #include <string>
+#include <vector>
+
+#include <unistd.h>
 
 #include "core/DataFile.hpp"
 #include "core/Enums.hpp"
@@ -95,7 +98,57 @@ static int checkData() {
   }
 }
 
+
+static void printUsage(std::ostream& out) {
+  out << "LabyTerm " LABYTERM_VERSION ": a dungeon crawler drawn as colored text.\n"
+         "\n"
+         "Usage: labyterm [options] [seed]\n"
+         "\n"
+         "Options:\n"
+         "  -t, --terminal   play inside this terminal (needs truecolor; 100 x 30 cells or more)\n"
+         "  -w, --window     play in its own window (the default when there is a display)\n"
+         "  -h, --help       show this help and exit\n"
+         "  -V, --version    show the version and exit\n"
+         "\n"
+         "A number is the seed: the same seed makes the same dungeon.\n"
+         "Without -t or -w the game opens a window when there is a display, and plays in the terminal when there is none (over ssh).\n"
+         "Developer options: --walk [seed] --map [seed] --fonts --layouts [1-3] [combat] --tuning --check-data --smoke\n";
+}
+
+// Takes the options every start shares (-h, -t, -w) out of the arguments, and chooses the backend. Returns -1 to go on, else the exit code.
+static int takeLaunchOptions(std::vector<char*>& args) {
+  bool terminal = false, window = false;
+  std::vector<char*> rest{args[0]};
+  for (size_t i = 1; i < args.size(); ++i) {
+    const char* a = args[i];
+    if (!std::strcmp(a, "-h") || !std::strcmp(a, "--help")) {
+      printUsage(std::cout);
+      return 0;
+    }
+    if (!std::strcmp(a, "-t") || !std::strcmp(a, "--terminal") || !std::strcmp(a, "--tui")) terminal = true;  // (--tui: the old name, not advertised)
+    else if (!std::strcmp(a, "-w") || !std::strcmp(a, "--window")) window = true;
+    else rest.push_back(args[i]);
+  }
+  if (terminal && window) {
+    std::cerr << "labyterm: choose one of --terminal and --window\n";
+    return 2;
+  }
+  args = rest;
+  // Not chosen: a window when there is a display (from a terminal too, like emacs), else this terminal when there is one (ssh),
+  // else a window (which will say it needs a display).
+  const bool hasDisplay = std::getenv("WAYLAND_DISPLAY") || std::getenv("DISPLAY");
+  const bool inTerminal = isatty(0) && isatty(1);
+  const bool wantTerminal = terminal || (!window && !hasDisplay && inTerminal);
+  laby::backendKind() = wantTerminal ? laby::BackendKind::Terminal : laby::BackendKind::Window;
+  return -1;
+}
+
 static int run(int argc, char** argv) {
+  std::vector<char*> args(argv, argv + argc);
+  if (const int code = takeLaunchOptions(args); code >= 0) return code;
+  argc = static_cast<int>(args.size());
+  argv = args.data();
+
   if (argc > 1 && (std::strcmp(argv[1], "--version") == 0 || std::strcmp(argv[1], "-V") == 0)) {
     std::cout << "labyterm " LABYTERM_VERSION "\n";
     return 0;
@@ -125,7 +178,7 @@ static int run(int argc, char** argv) {
   }
 
   if (std::strcmp(argv[1], "--smoke") != 0) {
-    std::cerr << "unknown option " << argv[1] << "\nusage: labyterm [seed] | --version | --walk [seed] | --map [seed] | --fonts | --layouts [1-3] [combat] | --tuning | --check-data | --smoke\n";
+    std::cerr << "unknown option " << argv[1] << "\ntry labyterm --help\n";
     return 2;
   }
   constexpr int kGridW = 80, kGridH = 30;  // logical grid; the window scales it

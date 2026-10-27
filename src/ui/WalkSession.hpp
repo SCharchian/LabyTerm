@@ -46,6 +46,9 @@ class WalkSession {
   void newRun(std::uint64_t seed) { newDungeon(seed); startTitle(); }
   // Where saves, the ghost and the scores are kept (empty: nothing is written or read, as in the headless tools and tests).
   void setStateDir(const std::string& dir);
+  // Records how the game was started (the terminal or the window) and, until both have been used, sets the start screen's line about the other way.
+  // LABYTERM_NO_TIPS=1 (for scripted sessions) shows no line and records nothing.
+  void noteLaunchMode(bool terminal);
   bool hasSave() const { return hasSave_; }
   bool onLegends() const { return mode_ == Mode::Legends; }
   const std::vector<ScoreEntry>& legends() const { return scores_; }
@@ -123,6 +126,8 @@ class WalkSession {
   Hero& debugHero() { return hero_; }
   // For tests: gets into the elevator if you are standing on its tile.
   void debugRideElevator();
+  // For tests: wins the fight on the spot (XP, loot and the chest as usual), like the DEBUG key W but in every build.
+  void debugWinFight() { if (combat_) { combat_->debugKill(); endCombat(); } }
   // For tests: how many tiles of this class the floor has (the player's own tile counts as what they stand on).
   int debugCountTiles(TileClass t) const;
   // Draws the whole main screen (view, minimap, HUD, log) into `grid`, which is kGridCols x kGridRows.
@@ -225,7 +230,7 @@ class WalkSession {
     if (secret_) return secret_->phase == SecretDoor::Phase::Offer;
     return inTown_ && !elevator_ && (spot_ != TownSpot::Sign || shopDetail_);
   }
-  void buildTownLabels(std::vector<SceneLabel>& out) const;
+  void buildTownLabels(std::vector<SceneLabel>& out, int vpCols, int vpRows, bool term) const;
   void portalKey(Key key, char32_t ch);
   void bossBeaten(bool fled);
   void afterRewards(bool bossReward);
@@ -321,6 +326,7 @@ class WalkSession {
   bool focused_ = true, torchDirty_ = false;
   bool torchWanted() const { return mode_ == Mode::Playing && (onMap_ || elevator_) && (!inTown_ || elevator_) && !dead_; }
   bool dead_ = false;
+  std::string modeHint_;               // see noteLaunchMode
   std::string stateDir_;               // see setStateDir
   bool hasSave_ = false;
   bool rebuildFloor_ = false;          // a restored game has no floor built (dungeon_ is stale): the next ride down builds one even if it is the same number
@@ -340,6 +346,7 @@ class WalkSession {
   Music music_ = Music::None;           // what the music was last told to be
   std::uint64_t now_ = 0, elevatorRunUntil_ = 0;
   bool hpHurt_ = false;  // took damage since the last key press: the HP bar stays red
+  int hurtFrom_ = 0;  // the HP before the damage taken since the last key press
   int lastHp_ = 0;  // the HP seen on the previous frame, to notice damage
   bool elevatorMusicRuns_ = false;
   std::uint64_t elevatorAnimUntil_ = 0, elevatorAnimLast_ = 0;  // the shaft animates until 2 s after the last Up/Down

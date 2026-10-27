@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(LabyTerm VERSION 1.0.0 LANGUAGES C CXX)  # keep packaging/arch/PKGBUILD and the Omarchy manifest equal: tools/check_version.sh
+project(LabyTerm VERSION 1.1.0 LANGUAGES C CXX)  # keep packaging/arch/PKGBUILD and the Omarchy manifest equal: tools/check_version.sh
 
 # Optimized by default: the CPU frame renderer and CRT filter are ~20x slower without -O2.
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -21,10 +21,11 @@ find_package(Threads REQUIRED)
 # otherwise it is fetched.
 find_package(nlohmann_json 3.11 QUIET CONFIG)
 if(NOT nlohmann_json_FOUND)
+  # The release tarball, checked against its SHA-256 (nlohmann's recommended FetchContent source): a moved tag cannot change it.
   FetchContent_Declare(nlohmann_json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.12.0
-    GIT_SHALLOW TRUE)
+    URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+    URL_HASH SHA256=42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
   FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
@@ -60,6 +61,8 @@ add_library(labyrender STATIC
   src/render/GlyphAtlas.cpp
   src/render/FrameRenderer.cpp
   src/render/Mosaic.cpp
+  src/render/TermFrame.cpp
+  src/render/TermCaps.cpp
   src/render/TextShapes.cpp
   src/render/Image8.cpp
   src/render/StbImpl.cpp
@@ -78,15 +81,23 @@ add_library(labyrender STATIC
   src/ui/KeyMap.cpp
   src/ui/SystemMenu.cpp
   src/ui/TitleScreen.cpp
+  src/ui/BossAura.cpp
+  src/ui/TermScreen.cpp
   src/ui/WalkSession.cpp)
 target_include_directories(labyrender PUBLIC src)
 target_include_directories(labyrender SYSTEM PUBLIC third_party/stb)  # SYSTEM: the vendored stb headers' own warnings are not ours to fix
 target_link_libraries(labyrender PUBLIC labycore Threads::Threads)
 target_compile_options(labyrender PRIVATE -Wall -Wextra)
 
-# DEBUG hotkeys (monster spawning toggle, ...): on for development builds, listed with the other key hints in the UI.
-# A release/ship build must configure with -DLABYTERM_DEBUG_KEYS=OFF, which removes them from the binary.
-option(LABYTERM_DEBUG_KEYS "Compile the DEBUG hotkeys in" ON)
+# DEBUG hotkeys (monster spawning toggle, ...), listed with the other key hints in the UI. They are for development: off by
+# default, so a plain `cmake` build, a package and the plugin's build have none; on by default only for a Debug build type.
+# tools/build.sh (a Release build for development) turns them on explicitly. Every hotkey must sit behind this switch.
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(LABYTERM_DEBUG_KEYS_DEFAULT ON)
+else()
+  set(LABYTERM_DEBUG_KEYS_DEFAULT OFF)
+endif()
+option(LABYTERM_DEBUG_KEYS "Compile the DEBUG hotkeys in (development builds)" ${LABYTERM_DEBUG_KEYS_DEFAULT})
 if(LABYTERM_DEBUG_KEYS)
   target_compile_definitions(labyrender PUBLIC LABYTERM_DEBUG_KEYS=1)
 endif()
@@ -132,6 +143,8 @@ target_compile_options(labyaudio PRIVATE -Wall -Wextra)
 add_executable(labyterm
   src/main.cpp
   src/render/SdlBackend.cpp
+  src/render/TerminalBackend.cpp
+  src/render/BackendFactory.cpp
   src/ui/MapViewer.cpp
   src/ui/FontShowcaseApp.cpp
   src/ui/LayoutVariantsApp.cpp
@@ -141,6 +154,16 @@ if(GLSLC)
   target_link_libraries(labyterm PRIVATE labygpu)
 endif()
 target_compile_options(labyterm PRIVATE -Wall -Wextra)
+
+# --- The game in a real terminal (truecolor + Unicode octants), cells only ---------------------------------
+add_executable(octant_probe tests/octant_probe.cpp)
+target_include_directories(octant_probe PRIVATE src)
+target_compile_options(octant_probe PRIVATE -Wall -Wextra)
+add_executable(term_glyphs_test tests/term_glyphs_test.cpp)
+target_include_directories(term_glyphs_test PRIVATE src)
+target_link_libraries(term_glyphs_test PRIVATE labyrender)
+add_test(NAME term_glyphs_test COMMAND term_glyphs_test)
+add_test(NAME term_startup COMMAND python3 -I ${CMAKE_SOURCE_DIR}/tools/test_term_startup.py $<TARGET_FILE:labyterm>)
 
 # Headless tools: render screens to PNG with the same renderer and filter the window uses
 add_executable(atlas_dump tests/atlas_dump.cpp)
@@ -166,6 +189,8 @@ target_link_libraries(store_test PRIVATE labyrender)
 add_executable(save_test tests/save_test.cpp)
 add_executable(menu_test tests/menu_test.cpp)
 target_link_libraries(save_test PRIVATE labyrender)
+add_executable(launch_mode_test tests/launch_mode_test.cpp)
+target_link_libraries(launch_mode_test PRIVATE labyrender)
 add_executable(persist_fuzz_test tests/persist_fuzz_test.cpp)
 target_link_libraries(persist_fuzz_test PRIVATE labyrender)
 target_link_libraries(menu_test PRIVATE labyrender)
@@ -218,6 +243,7 @@ add_test(NAME menu_test COMMAND menu_test)
 add_test(NAME save_test COMMAND save_test)
 add_test(NAME floor_persist_test COMMAND floor_persist_test)
 add_test(NAME persist_fuzz COMMAND persist_fuzz_test)
+add_test(NAME launch_mode_test COMMAND launch_mode_test)
 add_test(NAME run_test COMMAND run_test)
 add_test(NAME balance_rules COMMAND balance_rules_test)
 add_test(NAME store_test COMMAND store_test)

@@ -179,6 +179,16 @@ static void testMixer() {
   mm.setMusic(0, nullptr, 1, false);
   for (int i = 0; i < 20; ++i) mm.mix(out.data(), 4800);
   CHECK(mm.idle(), "music None should end in silence");
+
+  // an "effect" track (the storm) follows the effects volume: Effects Only plays it, music-only silences it
+  mm.setMusic(3, ramp, 1.0f, false, true);
+  mm.setVolumes(1, 0, 1);
+  for (int i = 0; i < 20; ++i) mm.mix(out.data(), 4800);
+  CHECK(peak(out) > 0.1f && !mm.idle(), "effect track silent with only effects on");
+  mm.setVolumes(1, 1, 0);
+  mm.mix(out.data(), 4800);
+  CHECK(peak(out) == 0 && mm.idle(), "effect track sounds with effects off");
+  mm.setMusic(0, nullptr, 1, false);
 }
 
 static bool has(const AudioEvents& ev, Sfx s) {
@@ -228,6 +238,18 @@ static void testSession() {
   b.takeAudio();
   b.debugFight(true);
   CHECK(lastMusic(b.takeAudio(), Music::None) == Music::BossCombat, "boss music");
+
+  // the elevator: its music starts, the crank clicks and keeps the music running
+  WalkSession e(5);
+  e.takeAudio();
+  e.debugRideElevator();
+  e.tick(1000);
+  AudioEvents er = e.takeAudio();
+  CHECK(lastMusic(er, Music::None) == Music::Elevator, "elevator music");
+  e.handle(Key::Down);
+  e.tick(1100);
+  er = e.takeAudio();
+  CHECK(has(er, Sfx::CrankClick), "crank click");
 }
 
 int main() {

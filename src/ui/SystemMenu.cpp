@@ -8,11 +8,14 @@
 #include "platform/Theme.hpp"
 #include "ui/KeyMap.hpp"
 #include "ui/PanelKit.hpp"
+#include "ui/TermLayout.hpp"
 
 namespace laby {
 namespace {
 
 constexpr int kWrapChars = 46;  // characters per line on a Page (see drawPage: the width is 93 cells, 11/6 cells per character)
+// The terminal build's text is one cell per character, so a Page (84 cells wide there) and the side notes take more characters per line.
+int noteChars() { return terminalUi() ? 38 : 25; }
 const char* kTabNames[] = {"How to play", "FAQ", "About/AI"};
 const char* kTabFiles[] = {"help/howtoplay.txt", "help/faq.txt", "help/About_and_AI.txt"};
 constexpr int kTabCount = 3;
@@ -34,7 +37,7 @@ int repeatIndex() {
 struct Choice { const char* label; const char* help; };
 const Choice kOptionInfo[] = {
     {"Music", "Turns the music on or off."},
-    {"Sound effects", "Turns footsteps, fights and other sounds on or off."},
+    {"Sound effects", "Footsteps, fights and other sounds."},
     {"Master volume", "The overall volume."},
     {"Music volume", "The music's volume."},
     {"Effects volume", "The sound effects' volume."},
@@ -140,10 +143,10 @@ void SystemMenu::loadHelp() const {
       auto& out = help_[static_cast<size_t>(t)];
       if (line.empty()) { out.push_back({"", "", 0}); continue; }
       if (line[0] == '#') {  // a heading: bright
-        for (const std::string& w : wrap(line.substr(line.find_first_not_of("# ")), kWrapChars)) out.push_back({w, "", 1});
+        for (const std::string& w : wrap(line.substr(line.find_first_not_of("# ")), pageChars_ > 0 ? pageChars_ : kWrapChars)) out.push_back({w, "", 1});
       } else {
         const bool bullet = line.rfind("- ", 0) == 0;  // a bullet's wrapped lines hang under its text
-        const auto parts = wrap(line, kWrapChars);
+        const auto parts = wrap(line, pageChars_ > 0 ? pageChars_ : kWrapChars);
         for (size_t i = 0; i < parts.size(); ++i) out.push_back({(bullet && i > 0 ? "  " : "") + parts[i], "", 0});
       }
     }
@@ -267,7 +270,7 @@ void SystemMenu::build(MenuPanel& m) const {
       m.title = "MENU";
       for (const char* t : {"Options", "Help", "About", "Abandon run", "Quit LabyTerm"})
         m.rows.push_back({t, "", 0, std::string_view(t) != "Abandon run" || canAbandon()});
-      if (sel_ == 3) for (const std::string& l : wrap("Return to Main Menu (Character will be lost)", 25)) m.detail.push_back({l, "", 0});
+      if (sel_ == 3) for (const std::string& l : wrap("Return to Main Menu (Character will be lost)", noteChars())) m.detail.push_back({l, "", 0});
       m.footer = "[Enter] Pick  [Esc] Resume";
       return;
     case Page::Options: {
@@ -278,7 +281,8 @@ void SystemMenu::build(MenuPanel& m) const {
         const bool on = i == sel_, arrows = i != kOptionCount - 1 && on;
         m.rows.push_back({r.label, arrows ? "< " + r.value + " >" : r.value, 0, r.enabled});
       }
-      for (const std::string& l : wrap(kOptionInfo[sel_].help, 25)) m.detail.push_back({l, "", 0});
+      for (const std::string& l : wrap(kOptionInfo[sel_].help, noteChars())) m.detail.push_back({l, "", 0});
+      while (m.detail.size() < 2) m.detail.push_back({"", "", 0});  // always two rows, so the panel doesn't resize between options
       m.footer = "[Arrows] Change";
       return;
     }
@@ -298,7 +302,7 @@ void SystemMenu::build(MenuPanel& m) const {
       m.rows.push_back({"Reset to defaults", "", 0, true});
       if (capture_) m.detail.push_back({"Press the new key for", "", 1}), m.detail.push_back({std::string(actionLabel(static_cast<Action>(sel_))) + ".", "", 1}), m.detail.push_back({"Esc cancels.", "", 2});
       else {
-        for (const std::string& l : wrap(note_, 25)) m.detail.push_back({l, "", 1});
+        for (const std::string& l : wrap(note_, noteChars())) m.detail.push_back({l, "", 1});
       }
       m.footer = capture_ ? "Waiting for a key..." : "[Enter] Rebind";
       return;
@@ -309,7 +313,8 @@ void SystemMenu::build(MenuPanel& m) const {
       for (int t = 0; t < kTabCount; ++t) m.tabs.push_back(kTabNames[t]);
       m.tab = tab_;
       m.scroll = scroll_;
-      if (helpLoaded_) m.pageLines = help_[static_cast<size_t>(tab_)];
+      loadHelp();  // (again when the page width changed)
+      m.pageLines = help_[static_cast<size_t>(tab_)];
       m.footer = "[Arrows] Scroll/Page  [Esc] Back";
       return;
     case Page::Abandon:
