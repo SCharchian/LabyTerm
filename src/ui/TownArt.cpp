@@ -216,18 +216,26 @@ TownPicture paintTownCore(const ViewPainter& painter, TownScene scene, int cols,
   const auto art = [&](const Bitmap1& b) { return density > 1 ? b.inverted() : b; };
   switch (scene) {
     case TownScene::Square: {
-      // The post is 118 pixels tall; a view smaller than the picture (the terminal's) shows the part around the chosen sign (a whole cell row at a time).
-      const Sign& cur = kSigns[std::clamp(selected, 0, 4)];
-      const int oy = std::clamp((cur.y + img(cur.image).h / 2 - H / 2) / 4 * 4, 0, std::max(0, 120 - H));
-      const int left = kSquareLeft - std::clamp(W - 2 * 93, 0, kSquareLeft) / 2 * 2 + std::max(0, (cur.x + img(cur.image).w + 2 - kSquareLeft - W + 1) / 2 * 2);  // (and the Save sign, off to the right, is brought in)
-      const Bitmap1 base = img("Town/SignPost").cropped(left, oy, W, H);
+      // The post is 116 pixels tall. A view shorter than that (the terminal's) gets the whole scene scaled down to fit, so nothing scrolls;
+      // the caption takes the last row. Everything below works in the scaled size.
+      const double f = std::min(1.0, (H - 4) / 116.0);
+      const auto fit = [&](const Bitmap1& b) {
+        return f < 1.0 ? b.scaledTo(std::max(1, static_cast<int>(std::lround(b.w * f))), std::max(1, static_cast<int>(std::lround(b.h * f)))) : b;
+      };
+      const auto scl = [&](int v) { return static_cast<int>(std::lround(v * f)); };
+      Sign sg[5];
+      for (int i = 0; i < 5; ++i) sg[i] = {kSigns[i].image, scl(kSigns[i].x), scl(kSigns[i].y)};
+      const Sign& cur = sg[std::clamp(selected, 0, 4)];
+      const int squareLeft = scl(kSquareLeft);
+      const int left = squareLeft - std::clamp(W - scl(2 * 93), 0, squareLeft) / 2 * 2 + std::max(0, (cur.x + fit(img(cur.image)).w + 2 - squareLeft - W + 1) / 2 * 2);  // (and the Save sign, off to the right, is brought in)
+      const Bitmap1 base = fit(img("Town/SignPost")).cropped(left, 0, W, H);
       (density > 1 ? L.shade : L.walls).blit(art(base), 0, 0);  // in Text the scenery is the dim tone, so the signs stand out from it
       // The signs are drawn twice: as part of the mosaic (what is left where a smooth sign does not reach), and over it as smooth
       // pictures, the chosen one at full brightness (as the picture has it) and the others in their negative.
       static std::map<int, std::shared_ptr<const Image8>> smoothed;  // by sign, +5 for the chosen one's look
       for (int i = 0; i < 5; ++i) {
-        const Sign& s = kSigns[i];
-        const Bitmap1 spr = img(s.image);
+        const Sign& s = sg[i];
+        const Bitmap1 spr = fit(img(s.image));
         const bool chosen = i == selected;
         static const int kPointsRight[] = {1, 0, 1, 0, 0};  // Temple and BeastMart point right, Blacksmith and Labyrinth left; Save & Exit is a box
         const Bitmap1 shape = density > 1 && i < 4 ? arrowPlank(spr.w, spr.h, kPointsRight[i], static_cast<unsigned>(i)) : spr;  // (Text: its own arrow)
@@ -235,7 +243,7 @@ TownPicture paintTownCore(const ViewPainter& painter, TownScene scene, int cols,
           for (int y = 0; y < shape.h; ++y)
             for (int x = 0; x < shape.w; ++x) {
               if (shape.at(x, y) == Bitmap1::Clear) continue;
-              const int tx = s.x - left + x, ty = (s.y - oy) + y;
+              const int tx = s.x - left + x, ty = s.y + y;
               if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue;
               bool edge = false;  // within three pixels of the outside
               for (int d = 1; d <= 3; ++d) edge = edge || shape.at(x - d, y) == Bitmap1::Clear || shape.at(x + d, y) == Bitmap1::Clear || shape.at(x, y - d) == Bitmap1::Clear || shape.at(x, y + d) == Bitmap1::Clear;
@@ -244,15 +252,15 @@ TownPicture paintTownCore(const ViewPainter& painter, TownScene scene, int cols,
             }
           static const int kRowShift[] = {1, 0, 1, 1, 0};  // the planks whose body sits lower than the middle of their outline
           const int tipLen = i < 4 ? shape.h * 9 / 10 : 0, toTail = (kPointsRight[i] ? -1 : 1) * tipLen / 4;  // the text sits in the plank's body, not the tip
-          const int midRow = ((s.y - oy) + shape.h / 2) / 4 + kRowShift[i], midCol = (s.x - left + shape.w / 2 + toTail) / 2;
+          const int midRow = (s.y + shape.h / 2) / 4 + kRowShift[i], midCol = (s.x - left + shape.w / 2 + toTail) / 2;
           const auto inside = [&](int cx, int cy) {  // is this cell filled completely by the plank
             for (int y = 0; y < 4; ++y)
               for (int x = 0; x < 2; ++x)
-                if (shape.at(cx * 2 + x - (s.x - left), cy * 4 + y - (s.y - oy)) == Bitmap1::Clear) return false;
+                if (shape.at(cx * 2 + x - (s.x - left), cy * 4 + y - s.y) == Bitmap1::Clear) return false;
             return true;
           };
           if (chosen) {  // the chosen plank is solid colour inside (the cells it fills completely), so the text's bar has no edge of its own
-            for (int cy = (s.y - oy) / 4; cy * 4 < (s.y - oy) + shape.h; ++cy) {  // each band of two cell rows: its longest run of cells that are inside in both
+            for (int cy = s.y / 4; cy * 4 < s.y + shape.h; ++cy) {  // each band of two cell rows: its longest run of cells that are inside in both
               int best = 0, bestX = 0, run = 0;
               for (int cx = (s.x - left) / 2 - 1; cx <= (s.x - left + shape.w) / 2 + 1; ++cx) {
                 run = inside(cx, cy) && inside(cx, cy + 1) ? run + 1 : 0;
@@ -270,7 +278,7 @@ TownPicture paintTownCore(const ViewPainter& painter, TownScene scene, int cols,
           {  // distressing: a few small marks (nicks, knots, grain) well inside the plank, faint beside the name, and clear of it
             static const char kMarks[] = {'.', ',', '\'', '`', '-', '~', ':'};
             const int textHalf = (static_cast<int>(std::ceil(static_cast<double>(std::string(i == 4 ? "Save &" : kSignNames[i]).size()) * 11 * 1.4 / 6)) + 2) / 2 + 2;
-            for (int cy = (s.y - oy) / 4; cy * 4 < (s.y - oy) + shape.h; ++cy)
+            for (int cy = s.y / 4; cy * 4 < s.y + shape.h; ++cy)
               for (int cx = (s.x - left) / 2 - 1; cx <= (s.x - left + shape.w) / 2 + 1; ++cx) {
                 if (cy >= midRow - 1 && cy <= midRow && std::abs(cx - midCol) <= textHalf) continue;  // (clear of the name)
                 if (!(inside(cx, cy) && inside(cx, cy + 1))) continue;  // (a mark must not leave the plank)
@@ -299,23 +307,23 @@ TownPicture paintTownCore(const ViewPainter& painter, TownScene scene, int cols,
           };
           if (i == 4) name("Save &", midRow - 2), name("Exit", midRow);
           else name(kSignNames[i], midRow - 1);
-        } else if (!chosen) L.walls.blit(spr, s.x - left, (s.y - oy));
+        } else if (!chosen) L.walls.blit(spr, s.x - left, s.y);
         else
           for (int y = 0; y < spr.h; ++y)
             for (int x = 0; x < spr.w; ++x)
               if (spr.at(x, y) != Bitmap1::Clear) {
-                const int tx = s.x - left + x, ty = (s.y - oy) + y;
+                const int tx = s.x - left + x, ty = s.y + y;
                 if (tx >= 0 && ty >= 0 && tx < W && ty < H) L.objects.px[static_cast<size_t>(ty) * static_cast<size_t>(W) + static_cast<size_t>(tx)] = base.at(tx, ty);
               }
-        auto& sm = smoothed[i + (chosen ? 5 : 0)];
+        auto& sm = smoothed[i + (chosen ? 5 : 0) + 10 * scl(100)];
         if (!sm) {
           Bitmap1 look = spr;  // the chosen sign takes the picture's own pixels
           if (chosen)
             for (int y = 0; y < spr.h; ++y)
-              for (int x = 0; x < spr.w; ++x) look.px[static_cast<size_t>(y) * static_cast<size_t>(spr.w) + static_cast<size_t>(x)] = base.at(s.x - left + x, (s.y - oy) + y);
+              for (int x = 0; x < spr.w; ++x) look.px[static_cast<size_t>(y) * static_cast<size_t>(spr.w) + static_cast<size_t>(x)] = base.at(s.x - left + x, s.y + y);
           sm = smoothSign(spr, look);
         }
-        if (density == 1) out.sprites.push_back({sm, s.x - left - kPad, (s.y - oy) - kPad, chosen});
+        if (density == 1) out.sprites.push_back({sm, s.x - left - kPad, s.y - kPad, chosen});
       }
       break;
     }
