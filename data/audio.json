@@ -384,6 +384,7 @@
   },
   "Elevator": {
    "file": "ELEVATOR_Music",
+   "effect": true,
    "volume": 0.6
   },
   "Town": {

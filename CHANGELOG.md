@@ -3,7 +3,7 @@
 All notable changes to LabyTerm. Versions follow [Semantic Versioning](https://semver.org/):
 saves and settings stay compatible within a major version.
 
-## [1.1.0] - unreleased
+## [1.1.0] - 2026-10-27
 
 Play in your terminal
 - `labyterm -t` (or `--terminal`) plays the whole game inside a truecolor terminal, drawn with Unicode octant block characters, themed like the window. `labyterm -w` (or `--window`) plays in the window. With neither, a window opens when there is a display, and the terminal is used when there is none (over ssh). `labyterm --help` lists the options.
