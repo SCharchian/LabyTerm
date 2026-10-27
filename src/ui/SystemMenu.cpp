@@ -37,7 +37,7 @@ int repeatIndex() {
 struct Choice { const char* label; const char* help; };
 const Choice kOptionInfo[] = {
     {"Music", "Turns the music on or off."},
-    {"Sound effects", "Turns footsteps, fights and other sounds on or off."},
+    {"Sound effects", "Footsteps, fights and other sounds."},
     {"Master volume", "The overall volume."},
     {"Music volume", "The music's volume."},
     {"Effects volume", "The sound effects' volume."},
@@ -282,6 +282,7 @@ void SystemMenu::build(MenuPanel& m) const {
         m.rows.push_back({r.label, arrows ? "< " + r.value + " >" : r.value, 0, r.enabled});
       }
       for (const std::string& l : wrap(kOptionInfo[sel_].help, noteChars())) m.detail.push_back({l, "", 0});
+      while (m.detail.size() < 2) m.detail.push_back({"", "", 0});  // always two rows, so the panel doesn't resize between options
       m.footer = "[Arrows] Change";
       return;
     }
