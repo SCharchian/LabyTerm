@@ -29,7 +29,8 @@ struct HudInfo {
   std::string place;  // the title in the view's top border ("Dungeon 12", "Town", ...)
   int level = 1, floor = 1, hp = 1, maxHP = 1, mp = 0, maxMP = 0, ac = 0, gold = 0, xp = 0, xpNeeded = 1;
   int score = 0;
-  bool hpHurt = false;  // you just took damage: the HP bar shows red for a moment
+  bool hpHurt = false;  // you just took damage: the HP bar shows red for a moment (the terminal's: the lost part shows pale)
+  int hpBefore = 0;     // the HP before that damage (since the last key press)
   std::array<int, 5> stats{};  // STR DEX INT VIT CHA
   std::vector<CharmeeInfo> charmees;  // at most two
 };
@@ -51,6 +52,7 @@ struct OverlayColumn {
   std::string footer;
   std::vector<std::string> buttons;  // big panels: action-style buttons in place of the footer; `buttonSel` is highlighted
   int buttonSel = 0;
+  std::string bigTitle;   // small boxes of the terminal screen: this in big letters (3 rows) at the top of the body, the lines under it
   bool selected = false;  // drawn with a bright frame
   int orb = 0;            // big panels: 1 = a health orb, 2 = a mana orb animated over the body (the lines go under it)
   double orbT = 0;        // seconds the orb has been showing
@@ -73,7 +75,8 @@ struct MenuRow {
 };
 constexpr int kPageLines = 12;  // lines of text a Page shows at once (each two cell rows tall)
 struct MenuPanel {
-  enum class Place { Left, Wide, Page } place = Place::Left;
+  // (Dialog and Right are only drawn by the terminal build, ui/TermScreen.cpp: a centred list, a list at the right edge of the picture.)
+  enum class Place { Left, Wide, Page, Dialog, Right } place = Place::Left;
   std::string title;
   std::vector<MenuRow> rows;
   int selected = 0;

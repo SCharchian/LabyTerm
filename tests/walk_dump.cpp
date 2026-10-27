@@ -11,7 +11,9 @@
 #include "core/DataFile.hpp"
 #include "core/Settings.hpp"
 #include "render/GlyphAtlas.hpp"
+#include "render/TermFrame.hpp"
 #include "ui/ScreenLayout.hpp"
+#include "ui/TermLayout.hpp"
 #include "ui/WalkSession.hpp"
 
 using namespace laby;
@@ -20,6 +22,12 @@ int main(int argc, char** argv) {
   if (argc < 4) {
     std::fprintf(stderr, "usage: walk_dump <seed> <moves UDLR...> <out.png> [cellH] [crt]\n");
     return 2;
+  }
+  int gridCols = kGridCols, gridRows = kGridRows;
+  if (const char* gsz = std::getenv("WALK_GRID")) {  // WALK_GRID=100x30: the terminal build's layout at that size (implies WALK_TERM); set before the session, which reads it
+    std::sscanf(gsz, "%dx%d", &gridCols, &gridRows);
+    terminalUi() = true;
+    setenv("WALK_TERM", "1", 1);
   }
   WalkSession session(std::strtoull(argv[1], nullptr, 10));
   int torchFrame = 0;
@@ -44,7 +52,7 @@ int main(int argc, char** argv) {
     else if (c == 'I') session.debugPortal();  // the town portal screen (the boss's reward)
     else if (c == 'Z') session.debugLevelUp();
     else if (c == 'H') {  // the start screen; WALK_TIME=<ms> sets the storm's clock, WALK_STATE=<dir> a state dir (scores for Legends)
-      if (std::getenv("WALK_STATE")) session.setStateDir(std::getenv("WALK_STATE"));
+      if (std::getenv("WALK_STATE")) session.setStateDir(std::getenv("WALK_STATE")), session.noteLaunchMode(std::getenv("WALK_GRID") != nullptr);  // (WALK_GRID: the terminal)
       session.startTitle();
     }
     else if (c == 'Q') session.handle(Key::Escape);
@@ -66,8 +74,9 @@ int main(int argc, char** argv) {
   for (size_t i = 0; i < fonts.size(); ++i)
     if (faces[i].load(fonts[i].path)) chain.push_back(&faces[i]);
   const Atlas atlas = buildGlyphAtlas(cellH / 2, cellH, chain, 11);
-  CellGrid grid(kGridCols, kGridRows);
+  CellGrid grid(gridCols, gridRows);
   session.draw(grid, loadTheme(), std::getenv("WALK_LABEL") ? std::getenv("WALK_LABEL") : "walk_dump | seed " + std::string(argv[1]) + " | moves " + std::string(argv[2]));  // WALK_LABEL="seed 7": the corner text, for clean screenshots
+  if (std::getenv("WALK_TERM")) grid = terminalFrame(grid);  // WALK_TERM=1: what the terminal version shows (pictures folded into octants, text snapped to cells; use crt 0)
   writeGridPng(argv[3], grid, atlas, crt);
   std::printf("%s: player at (%d, %d) facing %d\n", argv[3], session.player().x, session.player().y, static_cast<int>(session.player().facing));
 }

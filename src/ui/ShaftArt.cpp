@@ -29,8 +29,8 @@ double segDist(double x, double y, double ax, double ay, double bx, double by, d
   return std::hypot(x - (ax + t * vx), y - (ay + t * vy)) - r;
 }
 
-constexpr double kW = 186;  // the picture is this wide in units (the game's viewport); everything is placed from the middle
-constexpr double kRailL = 26, kRailR = kW - 26, kRailHalf = 3;
+constexpr double kBaseW = 186;  // the game's viewport in units; a wider picture (a big window) gets the same rails, kept the same distance from its edges
+constexpr double kRailInset = 26, kRailHalf = 3;
 
 // Position of the i-th thing in a column of roughly `pitch` units, jittered so the spacing is never regular (a regular
 // pattern would also look like it runs backwards at the wrong speed).
@@ -39,8 +39,10 @@ double slot(int i, double pitch, double jitter, int salt) { return i * pitch + (
 }  // namespace
 
 void paintShaft(ViewLayers& L, double scroll) {
-  const int d = std::max(1, L.walls.w / static_cast<int>(kW));
+  const int d = L.density > 0 ? L.density : std::max(1, L.walls.w / static_cast<int>(kBaseW));
   const int W = L.walls.w, H = L.walls.h;
+  const double kW = std::max(kBaseW, static_cast<double>(W) / d);  // the picture's real width in units: the cart sits in its middle, so the shaft must too
+  const double kRailL = kRailInset, kRailR = kW - kRailInset;
   const double mid = kW / 2;
   const int backShift = static_cast<int>(std::lround(scroll * 0.55 * d));  // the back wall is the farthest: slowest
   constexpr double kBeamPitch = 58, kClampPitch = 41, kLampPitch = 170;

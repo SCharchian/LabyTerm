@@ -15,6 +15,8 @@
 #include "ui/PanelKit.hpp"
 #include "core/Settings.hpp"
 #include "ui/ScreenLayout.hpp"
+#include "ui/TermLayout.hpp"
+#include "ui/TermScreen.hpp"
 #include "ui/ShaftArt.hpp"
 #include "ui/StatusTag.hpp"
 
@@ -261,6 +263,12 @@ void WalkSession::newDungeon(std::uint64_t seed) {
   audio_.clear();
   music_ = Music::None;
   syncMusic();
+}
+
+void WalkSession::noteLaunchMode(bool terminal) {
+  modeHint_.clear();
+  if (std::getenv("LABYTERM_NO_TIPS") || stateDir_.empty()) return;
+  if (!recordLaunchMode(stateDir_, terminal)) modeHint_ = terminal ? "Play in a graphical window: labyterm -w" : "Play right in your terminal: labyterm -t";
 }
 
 void WalkSession::setStateDir(const std::string& dir) {
@@ -1470,7 +1478,10 @@ void WalkSession::syncMusic() {
 
 bool WalkSession::tick(std::uint64_t nowMs) {
   now_ = nowMs;
-  if (hero_.hp < lastHp_) hpHurt_ = true;  // damage: the HP bar stays red until the next key press
+  if (hero_.hp < lastHp_) {  // damage: the HP bar shows it until the next key press
+    if (!hpHurt_) hurtFrom_ = lastHp_;
+    hpHurt_ = true;
+  }
   lastHp_ = hero_.hp;
   if (lockPending_) {
     lockPending_ = false;
@@ -1730,43 +1741,51 @@ void WalkSession::buildTownGuide(std::vector<OverlayLine>& g) const {
 }
 
 // The words on the town's picture (see TownArt.hpp): the square's caption, and the shops' boxes drawn inside the picture.
-void WalkSession::buildTownLabels(std::vector<SceneLabel>& out) const {
+// The terminal's view is smaller than the SDL window's and its text is one row tall (the SDL's is two), so there the lines sit half as far
+// apart, in a box that is as wide as the view leaves it.
+void WalkSession::buildTownLabels(std::vector<SceneLabel>& out, int vpCols, int vpRows, bool term) const {
   using A = SceneLabel::Align;
+  const TownScene scene = spot_ == TownSpot::Temple ? TownScene::Temple : spot_ == TownSpot::Blacksmith ? TownScene::Blacksmith : spot_ == TownSpot::BeastMart ? TownScene::BeastMart : TownScene::Square;
+  const int ox = townMarginCols(scene, vpCols);  // (a wide view has the scene in its middle)
+  const ShopGeom geom = shopGeom(std::min(vpCols, townDesignCols(scene)), vpRows);
+  const auto Y = [&](int sdlRow) { return term ? (sdlRow + 1) / 2 : sdlRow; };
+  const int footY = term ? vpRows - 2 : vpRows - 3;  // the line above the box's bottom edge
   const auto gold = [&](int v) { return std::to_string(v) + "g"; };
-  const auto add = [&](int cy, const std::string& text, const std::string& right, int tone, int rightTone, bool filled, A align, int cx = kShopInnerX, int w = kShopInnerW) {
+  const auto add = [&](int cy, const std::string& text, const std::string& right, int tone, int rightTone, bool filled, A align, int cx = -1000, int w = -1) {
     SceneLabel l;
     l.align = align;
     l.filled = filled;
-    l.cx = cx;
+    l.cx = (cx == -1000 ? geom.innerX : cx) + ox;
     l.cy = cy;
-    l.w = w;
+    l.w = w < 0 ? geom.innerW : w;
+    l.h = term ? 1 : 2;
     l.tone = tone;
     l.rightTone = rightTone;
     l.text = text;
     l.right = right;
     out.push_back(l);
   };
-  const int captionY = kViewportRows - 2;
+  const int captionY = term ? vpRows - 1 : vpRows - 2;
   switch (spot_) {
     case TownSpot::Sign: {
       static const char* kAbout[] = {"Heal all HP and MP.", "Buy equipment and scrolls.", "Sell your Charmees.", "Back down the elevator.", "Save and exit. A save works once."};
-      add(captionY, kAbout[std::clamp(townSel_, 0, 4)], "", 0, 0, false, A::Center, 1, kViewportCols - 2);
+      add(captionY, kAbout[std::clamp(townSel_, 0, 4)], "", 0, 0, false, A::Center, 1 - ox, vpCols - 2);
       return;
     }
     case TownSpot::Temple:
-      add(captionY, "Press Enter to heal all HP and MP", "", 1, 0, false, A::Center, 1, kViewportCols - 2);
+      add(captionY, "Press Enter to heal all HP and MP", "", 1, 0, false, A::Center, 1 - ox, vpCols - 2);
       return;
     case TownSpot::Blacksmith: {
       if (!shopDetail_) {  // the list: "For Sale", then each item and its price
-        add(1, "For Sale", "", 1, 0, false, A::Left);
+        add(Y(1), "For Sale", "", 1, 0, false, A::Left);
         for (size_t i = 0; i < shop_.size(); ++i) {
           const Item& it = shop_[i];
           const bool owned = it.type == EquipmentType::Scroll && hero_.hasScroll(it.scroll);
           const int price = itemPrice(it);
-          add(4 + 2 * static_cast<int>(i), it.type == EquipmentType::Scroll ? it.name : it.displayName, owned ? "owned" : gold(price), owned ? 2 : it.masterwork ? 5 : 0,
+          add(Y(4 + 2 * static_cast<int>(i)), it.type == EquipmentType::Scroll ? it.name : it.displayName, owned ? "owned" : gold(price), owned ? 2 : it.masterwork ? 5 : 0,
               owned ? 2 : hero_.gold >= price ? 5 : 4, static_cast<int>(i) == townSel_, A::Left);
         }
-        add(kViewportRows - 3, "[Enter] Details", "", 2, 0, false, A::Center);
+        add(footY, "[Enter] Details", "", 2, 0, false, A::Center);
         return;
       }
       if (townSel_ >= static_cast<int>(shop_.size())) return;
@@ -1793,23 +1812,25 @@ void WalkSession::buildTownLabels(std::vector<SceneLabel>& out) const {
       }
       for (size_t i = 0; i < detail.size() && i < 12; ++i) {
         const bool head = i == 0;
-        add(1 + 2 * static_cast<int>(i) + (head ? 0 : 1), detail[i].left, detail[i].right, head ? 1 : detail[i].tone == 0 ? 0 : detail[i].tone, detail[i].tone, false, head ? A::Center : A::Left);
+        add(Y(1 + 2 * static_cast<int>(i) + (head ? 0 : 1)), detail[i].left, detail[i].right, head ? 1 : detail[i].tone == 0 ? 0 : detail[i].tone, detail[i].tone, false, head ? A::Center : A::Left);
       }
       const bool owned = it.type == EquipmentType::Scroll && hero_.hasScroll(it.scroll);
-      add(kViewportRows - 3, owned ? "You own this scroll." : "[Enter] Buy " + gold(itemPrice(it)), "", owned ? 2 : hero_.gold >= itemPrice(it) ? 0 : 4, 0, false, A::Center);
+      add(footY, owned ? "You own this scroll." : "[Enter] Buy " + gold(itemPrice(it)), "", owned ? 2 : hero_.gold >= itemPrice(it) ? 0 : 4, 0, false, A::Center);
       return;
     }
     case TownSpot::BeastMart: {
       for (int k = 0; k < 2; ++k) {
-        const int y0 = 1 + k * kBeastSlotRows;
+        const int y0 = 1 + k * geom.slotRows;
         const bool on = k == townSel_, has = k < static_cast<int>(hero_.charmees.size());
+        // a slot's lines, by their row in the SDL window's 15-row slot: the name, the offer, the price (or the buttons), the hint
         const auto line = [&](int dy, const std::string& text, int tone, A align = A::Center) {
-          const bool big = !text.empty();  // big letters: the small ones washed out on the bright slot (the solid fill rows stay full width)
-          add(y0 + dy, text, "", tone, 0, on, align, big ? kShopInnerX + 1 : kShopInnerX, big ? kShopInnerW - 2 : kShopInnerW);
+          const bool big = !term && !text.empty();  // big letters: the small ones washed out on the bright slot (the solid fill rows stay full width)
+          const int row = term ? (dy == 0 ? 0 : dy == 1 ? 1 : dy == 4 ? 3 : dy == 7 ? 5 : dy == 10 ? 7 : dy / 2) : dy;
+          add(y0 + row, text, "", tone, 0, on, align, big ? geom.innerX + 1 : -1000, big ? geom.innerW - 2 : -1);
           if (big) out.back().scale = 1.4f;
         };
         if (on)  // the chosen slot is solid, gaps included
-          for (int dy = 0; dy < kBeastSlotRows - 1; dy += 2) line(dy, "", 0);
+          for (int dy = 0; dy < geom.slotRows - 1; dy += term ? 1 : 2) add(y0 + dy, "", "", 0, 0, true, A::Center);
         if (!has) {
           line(1, "Empty Slot", 1, A::Left);
           line(7, "<No Charmee>", 2);
@@ -1825,8 +1846,9 @@ void WalkSession::buildTownLabels(std::vector<SceneLabel>& out) const {
           line(7, price, 5);
         }
         if (on && sellArmed_) {  // "Sell?" and two buttons side by side
+          const int bw = term ? (geom.innerW - 2) / 2 : 21;
           for (int b = 0; b < 2; ++b) {
-            add(y0 + 7, b == 0 ? "Yes" : "No", "", 0, 0, sellNo_ == (b == 1), A::Center, kShopInnerX + 2 + b * 22, 21);
+            add(y0 + (term ? 5 : 7), b == 0 ? "Yes" : "No", "", 0, 0, sellNo_ == (b == 1), A::Center, geom.innerX + (term ? 0 : 2) + b * (bw + (term ? 2 : 1)), bw);
             out.back().button = true;
           }
         } else if (on) {
@@ -1847,13 +1869,15 @@ void WalkSession::draw(CellGrid& grid, const Theme& theme, const std::string& st
         if (t.id == kNewRun) big = static_cast<int>(rows.size());
         rows.push_back(t.label);
       }
-      drawTitleScreen(grid, theme, now_, rows, titleSel_, big);
+      if (terminalUi()) drawTitleScreenTerm(grid, theme, now_, rows, titleSel_, big, modeHint_);
+      else drawTitleScreen(grid, theme, now_, rows, titleSel_, big, modeHint_);
     } else if (mode_ == Mode::Legends) {
       LegendsInfo info;
       for (const ScoreEntry& e : scores_) info.rows.push_back({e.name, e.score, e.floor});
       info.highlight = !legendsFromTitle_ && summary_ ? summary_->rank : 0;
       info.fromGameOver = !legendsFromTitle_;
-      drawLegendsScreen(grid, theme, now_, info);
+      if (terminalUi()) drawLegendsScreenTerm(grid, theme, now_, info);
+      else drawLegendsScreen(grid, theme, now_, info);
     } else if (mode_ == Mode::GameOver) {
       GameOverInfo info;
       if (summary_) {
@@ -1869,7 +1893,8 @@ void WalkSession::draw(CellGrid& grid, const Theme& theme, const std::string& st
                       {"Final score", std::to_string(r.finalScore), 5}};
         if (r.rank > 0) info.score.push_back({"A new Legend!", "Rank " + std::to_string(r.rank), 3});
       }
-      drawGameOverScreen(grid, theme, now_, info);
+      if (terminalUi()) drawGameOverScreenTerm(grid, theme, now_, info);
+      else drawGameOverScreen(grid, theme, now_, info);
     } else {
       CreationInfo info;
       info.name = hero_.name;
@@ -1882,12 +1907,19 @@ void WalkSession::draw(CellGrid& grid, const Theme& theme, const std::string& st
       info.statLines.push_back({"Armor", std::to_string(hero_.ac), 0});
       info.itemTitle = "Starting item";
       if (hero_.startingItem) info.itemLines = itemColumn(*hero_.startingItem, "", "", true).lines;
-      drawCreationScreen(grid, theme, now_, info);
+      if (terminalUi()) drawCreationScreenTerm(grid, theme, now_, info);
+      else drawCreationScreen(grid, theme, now_, info);
     }
     if (sys_.open()) {
       MenuPanel panel;
       sys_.build(panel);
-      drawMenuOver(grid, theme, panel, (kGridCols - kViewportCols) / 2, 6, kViewportCols, kViewportRows);
+      if (terminalUi() && panel.place == MenuPanel::Place::Left) panel.place = MenuPanel::Place::Dialog;
+      if (terminalUi()) {  // the panel over the middle of the screen
+        const TermLayout tl = termLayout(grid.width(), grid.height());
+        drawMenuOverTerm(grid, theme, panel, tl.vx + (tl.vpCols - std::min(tl.vpCols, 60)) / 2, 3, std::min(tl.vpCols, 60), tl.vpRows - 3);
+      } else {
+        drawMenuOver(grid, theme, panel, (kGridCols - kViewportCols) / 2, 6, kViewportCols, kViewportRows);
+      }
     }
     return;
   }
@@ -1896,7 +1928,11 @@ void WalkSession::draw(CellGrid& grid, const Theme& theme, const std::string& st
   // The Text maze style traces the dungeon at twice the sub-pixel density (4x8 per cell: enough to tell '|' from '/' from '_');
   // the lair's entrance is the original's picture and stays a mosaic; the town's pictures follow the style; the elevator ride is drawn like the dungeon.
   const int density = settings().mazeStyle == 1 && !bossIntro_ ? 2 : 1;
-  const int pw = kViewportCols * 2 * density, ph = kViewportRows * 4 * density;
+  // The terminal build lays the screen out for its own size (TermLayout.hpp); the SDL window has the fixed layout.
+  const bool term = terminalUi();
+  const TermLayout tl = termLayout(grid.width(), grid.height());
+  const int vpCols = term ? tl.vpCols : kViewportCols, vpRows = term ? tl.vpRows : kViewportRows;
+  const int pw = vpCols * 2 * density, ph = vpRows * 4 * density;
   ViewLayers layers;
   bool lairInView = false;
   TownPicture townPic;  // (the labels must outlive drawMainScreen)
@@ -1969,9 +2005,9 @@ void WalkSession::draw(CellGrid& grid, const Theme& theme, const std::string& st
     // (the ride picture is made above)
   } else if (inTown_) {
     const TownScene scene = spot_ == TownSpot::Temple ? TownScene::Temple : spot_ == TownSpot::Blacksmith ? TownScene::Blacksmith : spot_ == TownSpot::BeastMart ? TownScene::BeastMart : TownScene::Square;
-    townPic = paintTown(painter_, scene, kViewportCols, kViewportRows, townSel_, static_cast<int>(now_ / 222), density);  // the flames: 222 ms a frame
+    townPic = paintTown(painter_, scene, vpCols, vpRows, townSel_, static_cast<int>(now_ / 222), density);  // the flames: 222 ms a frame
     layers = townPic.layers;
-    buildTownLabels(townPic.labels);
+    buildTownLabels(townPic.labels, vpCols, vpRows, term);
   } else if (portal_) {
     layers.blitOriginal(layers.objects, painter_.image("TownPortal-table-" + std::to_string(static_cast<int>(now_ / 100) % 6 + 1)), 82, 7);  // the original loops its 6 frames at 100 ms
   }
@@ -1987,6 +2023,7 @@ void WalkSession::draw(CellGrid& grid, const Theme& theme, const std::string& st
   hud.hp = std::max(0, hero_.hp);
   hud.maxHP = hero_.maxHP;
   hud.hpHurt = hpHurt_;
+  hud.hpBefore = hurtFrom_;
   hud.mp = hero_.mp;
   hud.maxMP = hero_.maxMP;
   hud.ac = hero_.ac;
@@ -2081,7 +2118,20 @@ void WalkSession::draw(CellGrid& grid, const Theme& theme, const std::string& st
     fillInventoryMenu(menu, hero_, subSel_);
   }
   std::string hints, bottomHints;
-  if (elevator_) {
+  if (elevator_ && term) {  // the chosen floor alone, in big letters, with one line under it (the floors are cranked through with Up/Down)
+    const int sel = elevator_->level;
+    OverlayColumn c;
+    c.selected = true;
+    c.title = "ELEVATOR";
+    c.bigTitle = sel == 0 ? "Town" : "Level " + std::to_string(sel);
+    if (sel == 0) c.lines.push_back({"Enter: to town", "", 2});
+    else if (tracker_.bossDone(sel)) c.lines.push_back({"Cleared: no way in", "", 4});
+    else c.lines.push_back({"Enter: get off here", "", 1});
+    overlay.columns.push_back(c);
+    overlay.smallW = 28;
+    overlay.smallH = 6;
+    hints = "[Up/Down] Ride  [Enter/Z] Exit";
+  } else if (elevator_) {
     OverlayColumn c;
     c.selected = true;
     c.title = elevator_->level == 0 ? "TOWN" : "Level " + std::to_string(elevator_->level);
@@ -2196,14 +2246,17 @@ void WalkSession::draw(CellGrid& grid, const Theme& theme, const std::string& st
   if (perk_) buildPerkPanel(perkPanel);
   MenuPanel sysPanel;
   if (sys_.open()) {
+    if (term) sys_.setPageChars(std::min(tl.vpCols, 84) - 6);  // a Help page's text fills its panel (84 cells at most, less the margins)
     sys_.build(sysPanel);
+    if (term && sysPanel.place == MenuPanel::Place::Left) sysPanel.place = MenuPanel::Place::Dialog;  // (the terminal build centres it)
     hints = sys_.hints();
   }
   opt.menu = sys_.open() ? &sysPanel : perk_ ? &perkPanel : menu_ != Menu::None && !chest_ ? &menu : nullptr;
   opt.hints = hints;
   if (!mapOpen_ && !sys_.open()) opt.bottomHints = bottomHints;
   opt.statusTag = statusTag;
-  drawMainScreen(grid, theme, opt);
+  if (term) drawMainScreenTerm(grid, theme, opt);
+  else drawMainScreen(grid, theme, opt);
 }
 
 }  // namespace laby

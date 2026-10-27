@@ -32,6 +32,13 @@ class SystemMenu {
   void setSound(std::function<void(Sfx)> f) { sound_ = std::move(f); }
 
   void build(MenuPanel& out) const;
+  // The terminal build: characters per line on a Help page, so the text fills whatever panel the screen has room for (re-wraps when it changes).
+  void setPageChars(int n) const {
+    if (n != pageChars_) {
+      pageChars_ = n;
+      helpLoaded_ = false;
+    }
+  }
   std::string hints() const;
 
  private:
@@ -59,6 +66,7 @@ class SystemMenu {
   std::function<bool()> canAbandon_;
   bool canAbandon() const { return canAbandon_ && canAbandon_(); }
   mutable bool helpLoaded_ = false;
+  mutable int pageChars_ = 0;  // 0: the SDL layout's width
   mutable std::vector<std::vector<OverlayLine>> help_;  // by tab
 };
 

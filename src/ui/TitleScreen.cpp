@@ -195,7 +195,7 @@ void bigTitle(CellGrid& g, const std::string& text, int y, float scale, Rgb ink,
 
 }  // namespace
 
-void drawTitleScreen(CellGrid& g, const Theme& th, std::uint64_t ms, const std::vector<std::string>& rows, int selected, int bigRow) {
+void drawTitleScreen(CellGrid& g, const Theme& th, std::uint64_t ms, const std::vector<std::string>& rows, int selected, int bigRow, const std::string& otherWay) {
   const bool flash = drawStorm(g, th, ms);
   Ctx c = makeCtx(g, th);
   const bool art = !originalArt("Laby-Title").empty();
@@ -207,6 +207,7 @@ void drawTitleScreen(CellGrid& g, const Theme& th, std::uint64_t ms, const std::
 
   // the credit, in real letters (the original's was a tiny bitmap font that blurred when the picture was scaled)
   c.text(4, g.height() - 5, "A game by Sam Charchian", flash ? th.bg : c.hi);
+  if (!otherWay.empty()) c.textR(0, 1, g.width() - 4, otherWay, flash ? th.bg : th.mana);  // top right, quiet
 
   // The choices, with no window round them: far right and low, so the picture shows. The first one ("Enter the Labyrinth") is half again
   // as big as the rest. (Without the art they sit in the middle.)

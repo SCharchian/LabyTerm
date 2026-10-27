@@ -84,6 +84,8 @@ class CellGrid {
     });
   }
   void addImage(const ImageRun& run) { images_.push_back(run); }
+  // Forgets the overlay text and the pictures (the terminal version first folds them into the cells).
+  void clearOverlays() { runs_.clear(); images_.clear(); }
 
   // The first-person viewport (cells, end exclusive). Screen effects treat it differently from the rest of the
   // UI: the CRT glow, for one, is strong on text and frames and gentle on the picture. Empty by default.

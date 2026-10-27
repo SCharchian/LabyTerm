@@ -14,6 +14,7 @@
 #include "ui/KeyMap.hpp"
 #include "ui/ScreenLayout.hpp"
 #include "ui/StatusTag.hpp"
+#include "ui/TermLayout.hpp"
 
 namespace laby {
 
@@ -24,12 +25,21 @@ int runWalkView(std::uint64_t seed) {
   Theme theme = loadTheme();
   ThemeWatcher themeWatcher;
   auto backend = makeBackend(kGridCols, kGridRows, "LabyTerm: walk");
-  CellGrid grid(kGridCols, kGridRows);
+  terminalUi() = backend->isTerminal();
+  int gridCols = kGridCols, gridRows = kGridRows;
+  const auto wantedGrid = [&] {  // a terminal's grid is its own size (at least the minimum); the window's is fixed
+    if (!backend->preferredGrid(gridCols, gridRows)) return;
+    gridCols = std::max(gridCols, kTermMinCols);
+    gridRows = std::max(gridRows, kTermMinRows);
+  };
+  wantedGrid();
+  CellGrid grid(gridCols, gridRows);
   int appliedCrt = backend->crtLevel();
   if (settings().crt >= 0 && !std::getenv("LABYTERM_CRT")) backend->setCrtLevel(settings().crt);
   appliedCrt = settings().crt = backend->crtLevel();
   WalkSession session(seed);
   session.setStateDir(stateDir());
+  session.noteLaunchMode(backend->isTerminal());
   session.startTitle();
 #ifdef LABYTERM_DEBUG_KEYS
   if (std::getenv("LABYTERM_SKIP_TITLE")) { session.newRun(seed); session.handle(Key::Enter); session.handle(Key::Enter); }  // straight into a dungeon (to measure the CPU use of the torch)
@@ -120,6 +130,14 @@ int runWalkView(std::uint64_t seed) {
       continue;
     }
     if (torchChanged) dirty = true;
+    if (backend->isTerminal()) {
+      const int oldCols = gridCols, oldRows = gridRows;
+      wantedGrid();
+      if (gridCols != oldCols || gridRows != oldRows) {
+        grid = CellGrid(gridCols, gridRows);
+        dirty = true;
+      }
+    }
     if (!dirty && !backend->needsFrame()) continue;
     dirty = false;
     session.draw(grid, theme, "seed " + std::to_string(session.seed()));

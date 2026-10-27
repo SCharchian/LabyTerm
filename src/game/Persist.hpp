@@ -62,4 +62,8 @@ std::vector<ScoreEntry> loadScores(const std::string& dir);
 // Records a finished run: returns its rank, or 0.
 int recordScore(const std::string& dir, const ScoreEntry& e);
 
+// modes.json: which ways of playing (the window, the terminal) this player has started. Records this start and returns whether both have
+// now been used. (Nothing is written without a folder; a file that cannot be read starts over.)
+bool recordLaunchMode(const std::string& dir, bool terminal);
+
 }  // namespace laby

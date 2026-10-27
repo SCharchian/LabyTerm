@@ -48,6 +48,9 @@ Yes, but only in town: pick "Save and Exit" at the sign post. There is no autosa
 # What is the ghost?
 When you die, the Labyrinth remembers your deceased player. In your next run, on the floor where you died, you have a chance to encounter a Spectral version of your former self: undead, at full health, with your base stats (no gear). Beat him to win your old (best!) item and gold. Your specter can only appear once per death.
 
+# Can I play in a terminal, or in a window?
+Both. "labyterm -t" plays right in your terminal (it needs truecolor, 100 x 30 cells or more, and a terminal that draws block characters; Ghostty and foot do). "labyterm -w" plays in its own window, with the CRT filter and smoother pictures. With neither, a window opens when there is a display, and the terminal is used when there is none. "labyterm --help" lists the options.
+
 # What are Legends?
 The top 10 scores on this computer, arcade style. Make the list when you die and your name blinks in it. Reach it any time from the start screen.
 

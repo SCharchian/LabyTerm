@@ -265,6 +265,19 @@ int insertScore(std::vector<ScoreEntry>& list, const ScoreEntry& e) {
   return static_cast<int>(at) + 1;
 }
 
+bool recordLaunchMode(const std::string& dir, bool terminal) {
+  if (dir.empty()) return false;
+  const fs::path path = fs::path(dir) / "modes.json";
+  bool window = false, term = false;
+  if (const auto j = readJson(path); j && j->is_object()) {
+    window = j->value("window", false);
+    term = j->value("terminal", false);
+  }
+  (terminal ? term : window) = true;
+  writeJson(path, {{"version", kSaveVersion}, {"window", window}, {"terminal", term}});
+  return window && term;
+}
+
 std::vector<ScoreEntry> loadScores(const std::string& dir) {
   std::vector<ScoreEntry> out;
   if (dir.empty()) return out;

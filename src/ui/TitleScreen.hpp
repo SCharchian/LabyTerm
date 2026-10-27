@@ -18,7 +18,8 @@ namespace laby {
 bool drawStorm(CellGrid& grid, const Theme& theme, std::uint64_t ms, bool withArt = true);
 
 // The start screen: the storm, the title, and a short list of choices with one highlighted. Row `big` ("Enter the Labyrinth") is the large one; rows above it (Continue) sit over it.
-void drawTitleScreen(CellGrid& grid, const Theme& theme, std::uint64_t ms, const std::vector<std::string>& rows, int selected, int big = 0);
+void drawTitleScreen(CellGrid& grid, const Theme& theme, std::uint64_t ms, const std::vector<std::string>& rows, int selected, int big = 0,
+                     const std::string& otherWay = "");  // otherWay: a line at the top right
 
 struct CreationInfo {
   std::string name;

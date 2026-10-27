@@ -68,11 +68,24 @@ class Backend {
   // floor(cols * 6 / n) characters per `cols` cells at every cell size.
   virtual int textSixths() const = 0;
   virtual void setTextSixths(int n) = 0;
+
+  // A terminal backend: the game uses its own layout, which follows the terminal's size (ui/TermLayout.hpp).
+  virtual bool isTerminal() const { return false; }
+  // The grid size this backend wants now (a terminal: its size in cells, clamped). False = keep the size passed to makeBackend.
+  virtual bool preferredGrid(int& cols, int& rows) const { (void)cols; (void)rows; return false; }
 };
 
-// Creates the SDL window backend. gridW/gridH is the logical cell grid; the window is resizable and the
+// Which backend makeBackend creates: the SDL window or the terminal. Chosen once at startup (main.cpp: --window / --terminal).
+enum class BackendKind { Window, Terminal };
+BackendKind& backendKind();
+
+// Creates the backend named by backendKind(). gridW/gridH is the logical cell grid. The window is resizable and the
 // glyph atlas is rebuilt at the largest whole cell size that fits (set LABYTERM_CRT=0..3 to pick the
-// filter level, default 2).
+// filter level, default 2); a terminal's grid follows its size.
 std::unique_ptr<Backend> makeBackend(int gridW, int gridH, const char* title);
+
+// The two backends (render/SdlBackend.cpp, render/TerminalBackend.cpp), for makeBackend.
+std::unique_ptr<Backend> makeSdlBackend(int gridW, int gridH, const char* title);
+std::unique_ptr<Backend> makeTerminalBackend(int gridW, int gridH);
 
 }  // namespace laby

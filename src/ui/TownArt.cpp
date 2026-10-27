@@ -203,7 +203,8 @@ void workshop(Bitmap1& layer, int x1) {
 
 }  // namespace
 
-TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int rows, int selected, int flame, int density) {
+namespace {
+TownPicture paintTownCore(const ViewPainter& painter, TownScene scene, int cols, int rows, int selected, int flame, int density) {
   const int W = cols * 2, H = rows * 4;
   TownPicture out;
   ViewLayers& L = out.layers;
@@ -215,7 +216,11 @@ TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int
   const auto art = [&](const Bitmap1& b) { return density > 1 ? b.inverted() : b; };
   switch (scene) {
     case TownScene::Square: {
-      const Bitmap1 base = img("Town/SignPost").cropped(kSquareLeft, 0, W, H);
+      // The post is 118 pixels tall; a view smaller than the picture (the terminal's) shows the part around the chosen sign (a whole cell row at a time).
+      const Sign& cur = kSigns[std::clamp(selected, 0, 4)];
+      const int oy = std::clamp((cur.y + img(cur.image).h / 2 - H / 2) / 4 * 4, 0, std::max(0, 120 - H));
+      const int left = kSquareLeft - std::clamp(W - 2 * 93, 0, kSquareLeft) / 2 * 2 + std::max(0, (cur.x + img(cur.image).w + 2 - kSquareLeft - W + 1) / 2 * 2);  // (and the Save sign, off to the right, is brought in)
+      const Bitmap1 base = img("Town/SignPost").cropped(left, oy, W, H);
       (density > 1 ? L.shade : L.walls).blit(art(base), 0, 0);  // in Text the scenery is the dim tone, so the signs stand out from it
       // The signs are drawn twice: as part of the mosaic (what is left where a smooth sign does not reach), and over it as smooth
       // pictures, the chosen one at full brightness (as the picture has it) and the others in their negative.
@@ -230,7 +235,7 @@ TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int
           for (int y = 0; y < shape.h; ++y)
             for (int x = 0; x < shape.w; ++x) {
               if (shape.at(x, y) == Bitmap1::Clear) continue;
-              const int tx = s.x - kSquareLeft + x, ty = s.y + y;
+              const int tx = s.x - left + x, ty = (s.y - oy) + y;
               if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue;
               bool edge = false;  // within three pixels of the outside
               for (int d = 1; d <= 3; ++d) edge = edge || shape.at(x - d, y) == Bitmap1::Clear || shape.at(x + d, y) == Bitmap1::Clear || shape.at(x, y - d) == Bitmap1::Clear || shape.at(x, y + d) == Bitmap1::Clear;
@@ -239,17 +244,17 @@ TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int
             }
           static const int kRowShift[] = {1, 0, 1, 1, 0};  // the planks whose body sits lower than the middle of their outline
           const int tipLen = i < 4 ? shape.h * 9 / 10 : 0, toTail = (kPointsRight[i] ? -1 : 1) * tipLen / 4;  // the text sits in the plank's body, not the tip
-          const int midRow = (s.y + shape.h / 2) / 4 + kRowShift[i], midCol = (s.x - kSquareLeft + shape.w / 2 + toTail) / 2;
+          const int midRow = ((s.y - oy) + shape.h / 2) / 4 + kRowShift[i], midCol = (s.x - left + shape.w / 2 + toTail) / 2;
           const auto inside = [&](int cx, int cy) {  // is this cell filled completely by the plank
             for (int y = 0; y < 4; ++y)
               for (int x = 0; x < 2; ++x)
-                if (shape.at(cx * 2 + x - (s.x - kSquareLeft), cy * 4 + y - s.y) == Bitmap1::Clear) return false;
+                if (shape.at(cx * 2 + x - (s.x - left), cy * 4 + y - (s.y - oy)) == Bitmap1::Clear) return false;
             return true;
           };
           if (chosen) {  // the chosen plank is solid colour inside (the cells it fills completely), so the text's bar has no edge of its own
-            for (int cy = s.y / 4; cy * 4 < s.y + shape.h; ++cy) {  // each band of two cell rows: its longest run of cells that are inside in both
+            for (int cy = (s.y - oy) / 4; cy * 4 < (s.y - oy) + shape.h; ++cy) {  // each band of two cell rows: its longest run of cells that are inside in both
               int best = 0, bestX = 0, run = 0;
-              for (int cx = (s.x - kSquareLeft) / 2 - 1; cx <= (s.x - kSquareLeft + shape.w) / 2 + 1; ++cx) {
+              for (int cx = (s.x - left) / 2 - 1; cx <= (s.x - left + shape.w) / 2 + 1; ++cx) {
                 run = inside(cx, cy) && inside(cx, cy + 1) ? run + 1 : 0;
                 if (run > best) best = run, bestX = cx - run + 1;
               }
@@ -265,8 +270,8 @@ TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int
           {  // distressing: a few small marks (nicks, knots, grain) well inside the plank, faint beside the name, and clear of it
             static const char kMarks[] = {'.', ',', '\'', '`', '-', '~', ':'};
             const int textHalf = (static_cast<int>(std::ceil(static_cast<double>(std::string(i == 4 ? "Save &" : kSignNames[i]).size()) * 11 * 1.4 / 6)) + 2) / 2 + 2;
-            for (int cy = s.y / 4; cy * 4 < s.y + shape.h; ++cy)
-              for (int cx = (s.x - kSquareLeft) / 2 - 1; cx <= (s.x - kSquareLeft + shape.w) / 2 + 1; ++cx) {
+            for (int cy = (s.y - oy) / 4; cy * 4 < (s.y - oy) + shape.h; ++cy)
+              for (int cx = (s.x - left) / 2 - 1; cx <= (s.x - left + shape.w) / 2 + 1; ++cx) {
                 if (cy >= midRow - 1 && cy <= midRow && std::abs(cx - midCol) <= textHalf) continue;  // (clear of the name)
                 if (!(inside(cx, cy) && inside(cx, cy + 1))) continue;  // (a mark must not leave the plank)
                 unsigned v = static_cast<unsigned>(cx) * 73856093u ^ static_cast<unsigned>(cy) * 19349663u ^ static_cast<unsigned>(i + 1) * 83492791u;
@@ -294,12 +299,12 @@ TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int
           };
           if (i == 4) name("Save &", midRow - 2), name("Exit", midRow);
           else name(kSignNames[i], midRow - 1);
-        } else if (!chosen) L.walls.blit(spr, s.x - kSquareLeft, s.y);
+        } else if (!chosen) L.walls.blit(spr, s.x - left, (s.y - oy));
         else
           for (int y = 0; y < spr.h; ++y)
             for (int x = 0; x < spr.w; ++x)
               if (spr.at(x, y) != Bitmap1::Clear) {
-                const int tx = s.x - kSquareLeft + x, ty = s.y + y;
+                const int tx = s.x - left + x, ty = (s.y - oy) + y;
                 if (tx >= 0 && ty >= 0 && tx < W && ty < H) L.objects.px[static_cast<size_t>(ty) * static_cast<size_t>(W) + static_cast<size_t>(tx)] = base.at(tx, ty);
               }
         auto& sm = smoothed[i + (chosen ? 5 : 0)];
@@ -307,10 +312,10 @@ TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int
           Bitmap1 look = spr;  // the chosen sign takes the picture's own pixels
           if (chosen)
             for (int y = 0; y < spr.h; ++y)
-              for (int x = 0; x < spr.w; ++x) look.px[static_cast<size_t>(y) * static_cast<size_t>(spr.w) + static_cast<size_t>(x)] = base.at(s.x - kSquareLeft + x, s.y + y);
+              for (int x = 0; x < spr.w; ++x) look.px[static_cast<size_t>(y) * static_cast<size_t>(spr.w) + static_cast<size_t>(x)] = base.at(s.x - left + x, (s.y - oy) + y);
           sm = smoothSign(spr, look);
         }
-        if (density == 1) out.sprites.push_back({sm, s.x - kSquareLeft - kPad, s.y - kPad, chosen});
+        if (density == 1) out.sprites.push_back({sm, s.x - left - kPad, (s.y - oy) - kPad, chosen});
       }
       break;
     }
@@ -366,7 +371,7 @@ TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int
       L.objects.blit(art(img("Town/BeastMart").cropped(0, 0, 80, 116)), 0, (H - 116) / 2);
       box(L.objects, kShopBoxX * 2, 1, W - 2, H - 2);
       for (int t = 0; t < 2; ++t)  // between the two slots
-        for (int x = kShopBoxX * 2; x < W - 1; ++x) L.objects.px[static_cast<size_t>(4 * (1 + kBeastSlotRows) - 1 + t) * static_cast<size_t>(W) + static_cast<size_t>(x)] = Bitmap1::Light;
+        for (int x = kShopBoxX * 2; x < W - 1; ++x) L.objects.px[static_cast<size_t>(4 * (1 + shopGeom(cols, rows).slotRows) - 1 + t) * static_cast<size_t>(W) + static_cast<size_t>(x)] = Bitmap1::Light;
       break;
     }
   }
@@ -376,6 +381,29 @@ TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int
     L.density = density;
   }
   return out;
+}
+
+}  // namespace
+
+int townDesignCols(TownScene scene) { return scene == TownScene::Square ? 120 : scene == TownScene::Temple ? 100 : 93; }
+int townMarginCols(TownScene scene, int cols) { return std::max(0, (cols - townDesignCols(scene)) / 2); }
+
+TownPicture paintTown(const ViewPainter& painter, TownScene scene, int cols, int rows, int selected, int flame, int density) {
+  const int inner = std::min(cols, townDesignCols(scene)), ox = townMarginCols(scene, cols);
+  TownPicture p = paintTownCore(painter, scene, inner, rows, selected, flame, density);
+  if (inner == cols) return p;
+  const int d = std::max(1, p.layers.density);
+  const auto widen = [&](Bitmap1& b) {
+    if (b.w <= 0) return;
+    Bitmap1 wide(cols * 2 * d, rows * 4 * d);
+    wide.blit(b, ox * 2 * d, 0);
+    b = std::move(wide);
+  };
+  ViewLayers& L = p.layers;
+  for (Bitmap1* b : {&L.background, &L.walls, &L.objects, &L.shade, &L.tints[0].lit, &L.tints[0].shade}) widen(*b);
+  for (SceneLabel& l : p.labels) l.cx += ox;
+  for (TownSprite& t : p.sprites) t.x += ox * 2;
+  return p;
 }
 
 }  // namespace laby
