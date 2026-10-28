@@ -78,8 +78,8 @@ fixes for tmux are in [KNOWN-ISSUES.md](KNOWN-ISSUES.md); `labyterm --help` list
 Then press SUPER+SPACE and search **"LabyTerm"**. The first launch builds the game from source (a few minutes, one `sudo pacman`
 prompt for missing build tools). When a new version comes out, LabyTerm offers to rebuild itself the next time you start it.
 
-**From the AUR:** an AUR package (`labyterm`) is planned. Once it exists, the plugin will offer it on first launch, and `yay -Syu`
-will keep it current.
+**A note on packages:** I'd like to publish LabyTerm to the AUR, but AUR account registration is closed, with no reopening date.
+Until that changes, install it as a plugin or from source.
 
 **From source:**
 
