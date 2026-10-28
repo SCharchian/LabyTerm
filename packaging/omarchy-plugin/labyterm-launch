@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 # Start LabyTerm. On the first run, install or build it (in a terminal, so the user sees progress and can answer the
 # one sudo prompt for missing packages). When a game that this plugin built is older than the plugin, offer to
-# rebuild it. A game from a package (the AUR) or from LABYTERM_BIN is never touched: the package manager updates it.
+# rebuild it. A game from a package or from LABYTERM_BIN is never touched: the package manager updates it.
 #
 #   LABYTERM_BIN   use this binary instead of looking for one
 #   LABYTERM_REPO  git URL to build from (default below); the pinned commit below must exist there
-#   LABYTERM_NO_AUR=1           skip the offer to install the AUR package (when one exists) and build from source
 #   LABYTERM_NO_UPDATE_CHECK=1  never offer to rebuild an older build
 set -euo pipefail
 
@@ -84,20 +83,7 @@ if [[ $mode == --update-here ]]; then
   fi
   echo
 else
-  # First run. Preferred: the AUR package, when it exists (updates then arrive with the normal system update).
-  if [[ -z ${LABYTERM_NO_AUR:-} ]]; then
-    helper=; for h in yay paru; do command -v "$h" >/dev/null 2>&1 && { helper=$h; break; }; done
-    if [[ -n $helper ]] && "$helper" -Si labyterm >/dev/null 2>&1; then
-      echo "LabyTerm is available as the AUR package 'labyterm' (updated with your normal system updates)."
-      read -rp "Install it with $helper? [Y/n] " ok
-      if [[ $ok != [nN]* ]] && "$helper" -S --needed labyterm && command -v labyterm >/dev/null 2>&1; then
-        echo; echo "Installed. Starting LabyTerm."
-        setsid -f labyterm >/dev/null 2>&1
-        exit 0
-      fi
-      echo "Package install did not complete; building from source instead."; echo
-    fi
-  fi
+  # First run: build from source.
   echo "LabyTerm is built from source the first time (a few minutes)."
 fi
 
