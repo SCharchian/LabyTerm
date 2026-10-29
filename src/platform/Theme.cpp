@@ -32,12 +32,17 @@ std::string trim(std::string s) {
 namespace fs = std::filesystem;
 
 // $LABYTERM_THEME_DIR (a dir containing colors.toml + theme.name) overrides the Omarchy
-// location; handy for testing without switching the desktop theme.
+// location; handy for testing without switching the desktop theme. Without an Omarchy theme, the player's own
+// folder (~/.config/labyterm/theme, which tools/ghostty_theme.sh writes) is used, so no variable is needed.
 fs::path themeDir() {
   if (const char* env = std::getenv("LABYTERM_THEME_DIR")) return env;
   const char* home = std::getenv("HOME");
   if (!home) return {};
-  return fs::path(home) / ".local/state/omarchy/current/theme";
+  const fs::path omarchy = fs::path(home) / ".local/state/omarchy/current/theme";
+  std::error_code ec;
+  if (fs::exists(omarchy / "colors.toml", ec)) return omarchy;
+  const char* xdg = std::getenv("XDG_CONFIG_HOME");
+  return (xdg && *xdg ? fs::path(xdg) : fs::path(home) / ".config") / "labyterm/theme";
 }
 
 // theme.name sits beside the theme dir in Omarchy (current/theme.name); allow it inside too.

@@ -17,7 +17,7 @@ LabyTerm is developed on Omarchy (Arch Linux, Hyprland, Wayland). It is built on
 
 ## Omarchy-specific parts
 
-- **Theme colors** come from `~/.local/state/omarchy/current/theme/colors.toml`. Elsewhere the game uses a built-in green-on-black palette. `LABYTERM_THEME_DIR` points at a folder with a `colors.toml` and `theme.name` to use another theme. TODO: read other desktops' palettes or a plain config file.
+- **Theme colors** come from `~/.local/state/omarchy/current/theme/colors.toml`. Elsewhere the game reads `~/.config/labyterm/theme/colors.toml` (`tools/ghostty_theme.sh` writes it from Ghostty's colors), else a built-in green-on-black palette. `LABYTERM_THEME_DIR` points at a folder with a `colors.toml` and `theme.name` to use another theme. TODO: read other desktops' palettes directly.
 - **The Omarchy plugin** (`packaging/omarchy-plugin/`: launcher entry, bar widget, drop-down window) needs Omarchy, Hyprland (`hyprctl`, `jq`), `xdg-terminal-exec`, and pacman. It does not work on other setups, and is not needed to play.
 - **The drop-down takes along windows opened while it is showing.** It lives on a Hyprland special workspace, and a new window opens on the active workspace, so an app you start while the drop-down is up hides and shows with it (Omarchy's scratchpad does the same). Hide the drop-down first. TODO: have the plugin move other apps' windows off its workspace.
 - `labyterm-launch` installs build dependencies with `sudo pacman`. TODO: detect apt and dnf and print the package names instead.

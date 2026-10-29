@@ -130,8 +130,8 @@ commented file you can override, and a handful of environment variables change w
 - **The game feels slow, or CPU use is high**: you probably have no GPU acceleration (a virtual machine, for one). Try
   `LABYTERM_CPU_CRT=1 labyterm`, a lower screen filter in Options, or a smaller window (`LABYTERM_CELL=12`).
 - **The window is too big for the screen**: pick a smaller cell size, `LABYTERM_CELL=12 labyterm`.
-- **The colors are off**: with no Omarchy theme the game uses its own palette. Point `LABYTERM_THEME_DIR` at a folder with a
-  `colors.toml` to use any palette.
+- **The colors are off**: with no Omarchy theme the game reads `~/.config/labyterm/theme/colors.toml`, else uses its own palette.
+  `tools/ghostty_theme.sh` fills that file from Ghostty; `LABYTERM_THEME_DIR` points at any other folder with a `colors.toml`.
 - **The first launch from the plugin fails to build**: the terminal waits for a key so you can read the error, and the full
   compiler output is in `~/.local/share/labyterm/build.log`.
 - **Anything else**: please [open an issue](https://github.com/SCharchian/LabyTerm/issues).
