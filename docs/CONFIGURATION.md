@@ -13,7 +13,8 @@ Everything here is optional: the game runs with its defaults and nothing is inst
 ## Theme colors
 
 The UI colors follow your Omarchy theme live (`~/.local/state/omarchy/current/theme/colors.toml`); with no theme present the game uses a
-built-in green-on-black palette. If a theme looks garish, tone it down in your tuning file under `display`: `themeColors` (0 = ignore the theme),
+built-in green-on-black palette. Without Omarchy, the game reads `~/.config/labyterm/theme/colors.toml` instead (same format), and
+`tools/ghostty_theme.sh` fills that folder with your Ghostty colors (run it again after a Ghostty theme change and a running game follows). If a theme looks garish, tone it down in your tuning file under `display`: `themeColors` (0 = ignore the theme),
 `themeStrength` (blend with the built-in palette), `themeSaturation` (colorfulness) and `frameMix` (brightness of the panel outlines).
 `./build/labyterm --layouts 4` previews the main screen (T toggles theme colors, L cycles line styles).
 
@@ -46,7 +47,7 @@ All optional; the game runs without any of them, and nothing installs them. The 
 | `LABYTERM_SETTINGS` | Path of the saved-settings file (default `~/.config/labyterm/settings.json`). |
 | `LABYTERM_STATE_DIR` | Folder for save, ghost and scores (default `~/.local/state/labyterm`). |
 | `LABYTERM_DATA` | Folder holding the game data (default: next to the executable, else the source tree). |
-| `LABYTERM_THEME_DIR` | Folder with `colors.toml` and `theme.name` that replaces the Omarchy theme. |
+| `LABYTERM_THEME_DIR` | Folder with `colors.toml` and `theme.name` that replaces the Omarchy theme (and `~/.config/labyterm/theme`). |
 | `LABYTERM_DEBUG=1` | Print window sizing and frame timings to stderr. |
 | `LABYTERM_SKIP_TITLE=1` | Start straight in a dungeon (for measuring). |
 
