@@ -3,6 +3,10 @@
 All notable changes to LabyTerm. Versions follow [Semantic Versioning](https://semver.org/):
 saves and settings stay compatible within a major version.
 
+## [Unreleased]
+
+- Without an Omarchy theme, the game reads its colors from `~/.config/labyterm/theme/colors.toml` (same format as Omarchy's). `tools/ghostty_theme.sh` fills that folder from Ghostty's current colors. Thanks to Jake Eaker (#1).
+
 ## [1.1.0] - 2026-10-27
 
 Play in your terminal
